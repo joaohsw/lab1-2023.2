@@ -2,14 +2,42 @@
 #include<math.h>
 
 int main(){
-    int a, b, c, delta, eq2;
-    printf("defina valores para a, b e c respectivamente: ");
-    scanf("%d %d %d", &a, &b, &c);
-    if (a == 0)
-        printf ("a equacao eh de primeiro grau");
-    else
-        delta = b^2 - 4*a*c;
-        eq2 = ((b - b*2) + (sqrt(delta))) /2*a;
-        printf("a raiz da equacao eh igual a: %d", delta);
+    float a, b, c, delta, x1, x2;
 
-}
+    printf("defina valores para a, b e c respectivamente: ");
+    scanf("%f %f %f", &a, &b, &c);
+
+    delta = b*b - 4 * a * c;
+
+    if(delta < 0){
+        printf("\nDelta = %.2f\nNao possui raizes reais!\n", delta);
+    }
+
+    else{
+
+        if(delta == 0){
+
+            x1 = -b / (2 * a);
+            printf("Delta = %.2f\nX = %.2f", delta, x1);
+        }
+
+            else{
+
+            x1 = (-b - sqrt(delta)) / (2 * a);
+            x2 = (-b + sqrt(delta)) / (2 * a);
+            printf("\nDELTA = %8.2f \nx'   = %8.2f\nx''  = %8.2f\n\n", delta, x1, x2);
+
+
+
+
+            }
+            
+        }
+
+    
+    
+        
+    }
+   
+    
+    
