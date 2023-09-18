@@ -85,7 +85,7 @@ int main() {
         printf("\n> Recomendacao: estrategia 2 com %.2f%% de vitorias", porcentagemv2);
     }
     else {
-        return 0;
+        printf("\nIndiferente");
     }
 
     return 0;
