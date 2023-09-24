@@ -38,7 +38,7 @@ void calculardv() {
 
 }
 
-void mga(float m, int aprovacoes){
+void mgaf(float m, int aprovacoes){
 
     float mga;
     mga = m / aprovacoes;
@@ -46,11 +46,33 @@ void mga(float m, int aprovacoes){
      
 }
 
-void ida(float m, int cargahaprovado, int cargahreprovado, int cargahsemnota){
-
-    float ida; 
+void ida(){
 
 
+
+
+}
+
+void mtd(int MDAi, int MDRi){
+
+    float mtd;
+    mtd = MDAi - MDRi;
+    printf("\n> Media Total de Disciplinas (MTD) = %.2f", mtd);
+
+}
+
+void paa(int disciplinas, int aprovacoes){
+    
+    int paa;
+
+    paa = (aprovacoes * 100) / disciplinas;
+
+    if (paa == 100){
+        printf("\nPercentual de Aproveitamento do aluno (PAA) = %d%%\nParabens! Aprovado em todas as disciplinas!", paa);
+    }
+    else{
+        printf("\nPercentual de Aproveitamento do Aluno (PAA) = %d%%", paa);
+    }
 
 }
 
@@ -59,8 +81,8 @@ int main(){
 
     calculardv();
 
-    int cargah, i, semnota = 0, disciplinas, aprovacoes = 0, reprovacoes = 0, cargahtotal, cargahaprovado, cargahreprovado, cargahsemnota;
-    float medias, m = 0;
+    int cargah, i, sna = 0, snr = 0, disciplinas, aprovacoes = 0, reprovacoes = 0, cargahtotal, cargahaprovado, cargahreprovado, cargahsemnota, cargahaprovacaosn, cargahreprovacaosn;
+    float medias, mtotal = 0, maprovado = 0, mreprovado = 0, MDAi = 0, MDRi = 0;
 
 
     printf("\nInforme a quantidade de disciplinas: ");
@@ -72,30 +94,45 @@ int main(){
     }
 
     for (i = 1; i <= disciplinas; i++){
-        printf("\nMedia e carga horaria da disciplina %d (digite 0 0 para sair e SN X caso possua aprovacao sem nota na disciplina): ", i);
+        printf("\n> Digite as medias e cargas horarias no modelo X X. Caso a disciplina tenha aprovacao ou reprovacao sem nota digite SNA X e SNR X respectivamente.");
+        printf("\nMedia e carga horaria da disciplina %d: ", i);
         scanf("%f %d",  &medias, &cargah);
 
-        if(medias == 'sn'){
-            semnota++;
+        if(medias == 'sna' || medias == 'SNA'){
+            sna++;
             cargahtotal += cargah;
             cargahsemnota += cargah;
+            cargahaprovacaosn += cargah;
+        }
+        
+        if(medias == 'snr' || medias == 'SNR'){
+            snr++;
+            cargahtotal += cargah;
+            cargahsemnota += cargah;
+            cargahreprovacaosn += cargah;
         }
 
         if((medias < 0 || medias > 10) || cargah < 0){
+            printf ("\nErro: Insira os dados novamente");
             i--;
         }
 
         if (medias >=  7 && cargah > 0){
-            m += medias;
+            mtotal += medias;
+            maprovado += medias;
             aprovacoes++;
             cargahtotal += cargah;
             cargahaprovado += cargah;
+            MDAi += medias * cargah;
         }
 
         else if (medias < 7 && cargah > 0){
+            mtotal += medias;
+            mreprovado += medias;
             reprovacoes++;
             cargahtotal += cargah;
             cargahreprovado += cargah;
+            MDRi += medias * cargah;
         }
 
     }
@@ -112,12 +149,14 @@ int main(){
     scanf("%d", &menu);
 
     switch (menu){
-        case 1: mga(m, aprovacoes);
+        case 1: mgaf(maprovado, aprovacoes);
             break;
-        case 2: ida(m, cargahaprovado, cargahreprovado, cargahsemnota);
+        case 2: ida();
             break;
-
-
+        case 3: mtd(MDAi, MDRi);
+            break;
+        case 4: paa(disciplinas, aprovacoes);
+            break;
     }
 
 
