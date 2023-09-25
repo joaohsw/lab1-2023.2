@@ -1,17 +1,18 @@
 #include <stdio.h>
 
+
 void calculardv() {
 
     int alg = 5, i, num, alla = 0, a1, a2, a3, a4, a5, soma, dv;
 
-    printf("Digite 5 algarismos (de 0 a 9):\n");
+    printf("\n> Digite os 5 ultimos algarismos (de 0 a 9) do numero de matricula:\n");
 
     for(i = 1; i <= alg; i++) {
-        printf("Algarismo %d: ", i);
+        printf("  Algarismo %d: ", i);
         scanf("%d", &num);
 
         if (num < 0 || num > 9) {
-            printf("Erro: algarismo deve ser de 0 a 9\n");
+            printf("\nErro: algarismo deve ser de 0 a 9\n");
             i--; 
         } 
         else {
@@ -34,7 +35,7 @@ void calculardv() {
         dv = ((soma * 10) %  11) % 10;
     }
 
-    printf("\nMatricula com DV (digito verificador) : %d-%d", alla, dv);
+    printf("\n> Matricula com DV (digito verificador) : %d-%d", alla, dv);
 
 }
 
@@ -42,22 +43,30 @@ void mgaf(float m, int aprovacoes){
 
     float mga;
     mga = m / aprovacoes;
-    printf (" > MGA = %.2f", mga);
+
+    printf (" > Media Geral Acumulada (MGA) = %.2f", mga);
      
 }
 
-void ida(){
+void ida(float maprovado, int cargahaprovado, int cargahaaprovacaosemnota, int cargahreprovacaosemnota, int cargahreprovacao){
 
-
-
+    float ida;
+    ida = (maprovado * cargahaprovado) + (7 * cargahaaprovacaosemnota) - (7 * cargahreprovacao) - (7 * cargahreprovacaosemnota); // como vai haver media em uma disciplina aprovada sem nota 
+    printf(" > Indice de desempenho Academico (IDA) = %f", ida);
 
 }
 
-void mtd(int MDAi, int MDRi){
+void mtd(int MDAi, int MDRi, int cargahsemnota){
 
     float mtd;
     mtd = MDAi - MDRi;
-    printf("\n> Media Total de Disciplinas (MTD) = %.2f", mtd);
+    
+    if((MDAi == 0 || MDRi ==0) && cargahsemnota > 0){
+        printf("Erro: calculo nao pode ser realizado pois alguma disciplina nao possui nota");
+    }
+    else{
+        printf("\n> Media Total de Disciplinas (MTD) = %.2f", mtd);
+    }
 
 }
 
@@ -83,40 +92,54 @@ int main(){
 
     int cargah, i, sna = 0, snr = 0, disciplinas, aprovacoes = 0, reprovacoes = 0, cargahtotal, cargahaprovado, cargahreprovado, cargahsemnota, cargahaprovacaosn, cargahreprovacaosn;
     float medias, mtotal = 0, maprovado = 0, mreprovado = 0, MDAi = 0, MDRi = 0;
+    char yesorno, aour;
 
 
-    printf("\nInforme a quantidade de disciplinas: ");
+    printf("\n\n> Informe a quantidade de disciplinas: ");
     scanf("%d", &disciplinas);
 
     while(disciplinas <= 0){
-        printf("\nNumero de disciplinas invalido, insira novamente: ");
+        printf("\n> Numero de disciplinas invalido, insira novamente: ");
         scanf("%d", &disciplinas);
     }
 
     for (i = 1; i <= disciplinas; i++){
-        printf("\n> Digite as medias e cargas horarias no modelo X X. Caso a disciplina tenha aprovacao ou reprovacao sem nota digite SNA X e SNR X respectivamente.");
-        printf("\nMedia e carga horaria da disciplina %d: ", i);
-        scanf("%f %d",  &medias, &cargah);
 
-        if(medias == 'sna' || medias == 'SNA'){
-            sna++;
-            cargahtotal += cargah;
-            cargahsemnota += cargah;
-            cargahaprovacaosn += cargah;
+        printf("\n> Disciplina %d possui nota? (Y ou N): ", i);
+        scanf(" %c", &yesorno);
+
+        if (yesorno == 'y' || yesorno == 'Y'){
+            printf("\n> Digite as medias e cargas horarias no modelo X X.");
+            printf("\n\nMedia e carga horaria da disciplina %d: ", i);
+            scanf("%f %d",  &medias, &cargah);
+
         }
         
-        if(medias == 'snr' || medias == 'SNR'){
-            snr++;
-            cargahtotal += cargah;
-            cargahsemnota += cargah;
-            cargahreprovacaosn += cargah;
+        else if (yesorno == 'n' || yesorno == 'N'){
+            printf("\n> Informe se houve aprovacao ou reprovacao (a ou r) na disciplina %d e sua carga horaria: ", i);
+            scanf(" %c %d", &aour, &cargah);
+
+            if(aour == 'a' || aour == 'A'){
+                sna++;
+                cargahtotal += cargah;
+                cargahaprovacaosn += cargah;
+                cargahsemnota += cargah;
+                aprovacoes++;
+            }
+            else if (aour == 'r' || aour == 'R'){
+                snr++;
+                cargahtotal += cargah;
+                cargahreprovacaosn += cargah;
+                cargahsemnota += cargah;
+                reprovacoes++;
+            }
         }
 
         if((medias < 0 || medias > 10) || cargah < 0){
             printf ("\nErro: Insira os dados novamente");
             i--;
         }
-
+        
         if (medias >=  7 && cargah > 0){
             mtotal += medias;
             maprovado += medias;
@@ -137,27 +160,31 @@ int main(){
 
     }
 
-
     int menu;
 
-    printf("\n> Opcoes de calculo: ");
-    printf("\n  1. Media Geral acumulada (MGA)");
-    printf("\n  2. Indice de desempenho Academico (IDA)");
-    printf("\n  3. Media total de Disciplinas (MTD)");
-    printf("\n  4. Percentual de Aproveitamento do Aluno");
-    printf("\n> Selecione uma opcao: ");
-    scanf("%d", &menu);
+    while (1) {
 
-    switch (menu){
-        case 1: mgaf(maprovado, aprovacoes);
-            break;
-        case 2: ida();
-            break;
-        case 3: mtd(MDAi, MDRi);
-            break;
-        case 4: paa(disciplinas, aprovacoes);
-            break;
+        printf("\n\n> Opcoes de calculo: ");
+        printf("\n  1. Media Geral acumulada (MGA)");
+        printf("\n  2. Indice de desempenho Academico (IDA)");
+        printf("\n  3. Media total de Disciplinas (MTD)");
+        printf("\n  4. Percentual de Aproveitamento do Aluno (PAA)");
+        printf("\n  5. Sair");
+        printf("\n\n> Selecione uma opcao: ");
+        scanf("%d", &menu);
+
+        switch (menu){
+            case 1: mgaf(maprovado, aprovacoes);
+                break;
+            case 2: ida(maprovado, cargahaprovado, cargahaprovacaosn, cargahreprovacaosn, cargahreprovado);
+                break;
+            case 3: mtd(MDAi, MDRi, cargahsemnota);
+                break;
+            case 4: paa(disciplinas, aprovacoes);
+                break;
+            case 5: return 0;
+                break;
+            default: printf("\nOpcao invalida");
+        }
     }
-
-
 }
