@@ -1,0 +1,57 @@
+1.
+
+int main(){
+
+	int i, cont = 0;
+	float media, total = 0, media_final;
+
+	imprimir("Insira o valor das 50 notas da turma");
+
+	para i de 1 ate 50{
+	ler(media);
+	total += media;
+	cont++;
+	}
+	
+	media_final = total/cont;
+
+	imprimir(media_final);
+
+
+}
+
+2.
+
+int main{
+
+
+	int i, num_par, cont = 0, total = 0, media_final;
+	
+	imprimir("Insira um conjunto de numeros pares, digite 0 para encerrar a leitura");
+	
+	para i de 1 ate num_par = 0{
+	ler(num_par);
+	cont++;
+	total += num_par;
+	}
+
+	media_final = total/cont;
+	imprimir(media_final);
+
+}
+	
+3.
+
+int main{
+
+	int i, n, fatorial = 1;
+	
+	imprimir("Insira um numero para calcular seu fatorial");
+	ler(n);
+
+	para i de 1 ate n-1{
+	fatorial *= i;
+	}
+
+	imprimir(fatorial);
+}
