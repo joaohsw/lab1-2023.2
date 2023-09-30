@@ -8,9 +8,9 @@ int main(){
 	imprimir("Insira o valor das 50 notas da turma");
 
 	para i de 1 ate 50{
-	ler(media);
-	total += media;
-	cont++;
+		ler(media);
+		total += media;
+		cont++;
 	}
 	
 	media_final = total/cont;
@@ -30,9 +30,9 @@ int main{
 	imprimir("Insira um conjunto de numeros pares, digite 0 para encerrar a leitura");
 	
 	para i de 1 ate num_par = 0{
-	ler(num_par);
-	cont++;
-	total += num_par;
+		ler(num_par);
+		cont++;
+		total += num_par;
 	}
 
 	media_final = total/cont;
@@ -50,8 +50,63 @@ int main{
 	ler(n);
 
 	para i de 1 ate n-1{
-	fatorial *= i;
+		fatorial *= i;
 	}
 
 	imprimir(fatorial);
+}
+
+4.
+
+int main{
+
+	int i, n,
+
+	imprimir("Insira um numero inteiro e positivo: ");
+	ler(n);
+
+	para i de 1 ate n{
+		imprimir(i * 2, )
+	}
+	
+}
+
+5.
+
+int main(){
+
+	int i;
+	
+	para i de 0 ate 5{
+		se i == 1{
+			imprimir(/ni);
+		}
+			se i == 2{
+				imprimir(\n\ti);
+			}
+				se i == 3{
+					imprimir(\n\t\ti);
+			}
+	}
+	
+}
+
+6.
+
+int main(){
+
+	int fibo = 0, fibo2 = 0;
+
+	para i de 1 ate 10{
+		fibo = 0 + 1;
+			se i > 1{
+				fibo2 =
+		
+		
+
+
+
+
+
+
 }
