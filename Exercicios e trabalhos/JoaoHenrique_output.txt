@@ -1,0 +1,18 @@
+> Estrategia 1 (sem mudanca de carta):
+  Partidas jogadas: 1000000
+  Partidas ganhas: 333874
+  Partidas perdidas: 666126
+  Porcentagem de derrotas: 66.61%
+  Porcentagem de vitorias: 33.39%
+
+> Estrategia 2 (com mudanca de carta):
+  Partidas jogadas: 1000000
+  Partidas ganhas: 666577
+  Partidas perdidas: 333423
+  Porcentagem de derrotas: 33.34%
+  Porcentagem de vitorias: 66.66%
+
+> Recomendacao: estrategia 2 com 66.66% de vitorias
+
+// Resultado esperado, pois considerando que na estratégia 1 o jogador escolhe 1 carta de 3 e não tem a opção de mudar, o único resultado possível é 1/3 -> ~33%
+// E na estratégia 2 o jogador só vai perder caso a primeira carta seja o ás de espadas ou seja o único resultado possível é 2/3 -> ~66% 
