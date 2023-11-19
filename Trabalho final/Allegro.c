@@ -8,16 +8,17 @@
 #define TAMANHO_TELA_Y 600
 
 void menu() {
-    // Lógica do menu aqui
+    // LÃ³gica do menu aqui
 }
 
 void jogo() {
-    // Lógica do jogo aqui
+    // LÃ³gica do jogo aqui
 }
 
 void pvp() {
 
     int matriz_tabuleiro[6][6] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
 
 
 }
@@ -108,7 +109,8 @@ int main(void) {
 
     font = al_create_builtin_font();
     fila_eventos = al_create_event_queue();
-    timer = al_create_timer(1.0 / 30.0);
+    timer = al_create_timer(0.1);
+    al_start_timer(timer);
 
     janela = al_create_display(TAMANHO_TELA_X, TAMANHO_TELA_Y);
 
@@ -116,9 +118,8 @@ int main(void) {
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
 
-    al_start_timer(timer);
-
     bool rodando = true;
+    int situacao = 0;
 
      while (rodando) {
 
@@ -129,7 +130,19 @@ int main(void) {
             rodando = false;
         }
 
-        tabuleiro_inicial(janela);
+         if (evento.type == ALLEGRO_EVENT_TIMER) {
+            if (al_get_timer_count(timer)%240 == 0) {
+                situacao = !situacao;
+            }
+        }
+
+        if (situacao == 0) {
+            tabuleiro_inicial(janela);
+        }
+
+        printf("%d", al_get_mouse_cursor_position);
+
+        al_flip_display();
 
     }
 
