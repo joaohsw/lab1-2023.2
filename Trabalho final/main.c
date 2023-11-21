@@ -17,7 +17,7 @@ typedef struct {
 typedef struct {
 
     int cx;
-    int cy
+    int cy;
 
 } posicao;
 
@@ -96,7 +96,7 @@ void tabuleiro_inicial(ALLEGRO_BITMAP *tabuleiro, ALLEGRO_BITMAP *peca1, ALLEGRO
 
 }
 
-void teste (posicao matriz_coord[6][6], int rodadas, int vez){
+void teste (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
     int i, j, x, y;
 
@@ -107,25 +107,41 @@ void teste (posicao matriz_coord[6][6], int rodadas, int vez){
         for(j = 0; j < 6; j++){
             if(i == 0){
                 matriz_coord[i][j].cx = x;
-            }
-            else if (i > 0){
+            } else if(i == 1){
                 matriz_coord[i][j].cx = x + 60;
-                if (x = 550){
-                    x = 250;
-                }
+            } else if(i == 2){
+                matriz_coord[i][j].cx = x + 120;
+            } else if(i == 3){
+                matriz_coord[i][j].cx = x + 180;
+            } else if(i == 4){
+                matriz_coord[i][j].cx = x + 240;
+            } else if(i == 5){
+                matriz_coord[i][j].cx = x + 300;
             }
-            if(j = 0){
+
+            if(j == 0){
                 matriz_coord[i][j].cy = y;
-            } else if(j = 1){
+            } else if(j == 1){
                 matriz_coord[i][j].cy = y + 60;
-            } else if(j = 2){
+            } else if(j == 2){
                 matriz_coord[i][j].cy = y + 120;
-            } else if(j = 3){
+            } else if(j == 3){
                 matriz_coord[i][j].cy = y + 180;
-            } else if(j = 4){
+            } else if(j == 4){
                 matriz_coord[i][j].cy = y + 240;
-            } else if(j = 5){
+            } else if(j == 5){
                 matriz_coord[i][j].cy = y + 300;
+            }
+        }
+    }
+
+    for(i = 0; i < 6; i++){
+        for(j = 0; j < 6; j++){
+            if(matriz_tabuleiro[i][j] == 1){
+                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 25, al_map_rgb(0, 0, 255));
+            }
+            if(matriz_tabuleiro[i][j] == 2){
+                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 25, al_map_rgb(255, 0, 0));
             }
         }
     }
@@ -139,9 +155,17 @@ void teste (posicao matriz_coord[6][6], int rodadas, int vez){
 void pvp(int coordx, int coordy, int *vez, int *rodadas) {
 
     posicao matriz_coord[6][6];
-    pecas pecaspvp; 
+    pecas pecaspvp;
+    int matriz_tabuleiro[6][6] = {
+        2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1
+    };
 
-    teste(matriz_coord, rodadas, vez);
+    teste(matriz_coord, matriz_tabuleiro);
 
 
     pecaspvp.nP1 = 12;
@@ -153,17 +177,6 @@ void pvp(int coordx, int coordy, int *vez, int *rodadas) {
     int p2x[12] = {250, 310, 370, 430, 490, 550, 250, 310, 370, 430, 490, 550};
     int p2y[12] = {150, 150, 150, 150, 150, 150, 210, 210, 210, 210, 210, 210};
 
-    if (vez == 1){
-        if(coordx >= 285 && coordx <= 335 && coordy >= 380 && coordy <= 425){
-            al_draw_filled_circle(310, 330, 25, al_map_rgb(0, 0, 255));
-        }
-
-
-
-    }
-
-    
-    
 
 }
 
@@ -219,9 +232,11 @@ int main(void) {
 
         if (situacao == 1) {
             
+            pvp(state.x, state.y, &vez, &rodadas);
+
+
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 1){
                 al_get_mouse_state(&state);
-                pvp(state.x, state.y, vez, rodadas);
                 if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 
                 }
@@ -229,7 +244,7 @@ int main(void) {
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 2){
                 al_get_mouse_state(&state);
-                pvp(state.x, state.y, vez, rodadas);
+                pvp(state.x, state.y, &vez, &rodadas);
             }
 
         }
