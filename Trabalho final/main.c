@@ -7,25 +7,20 @@
 #define TAMANHO_TELA_X 800
 #define TAMANHO_TELA_Y 600
 
+struct pecas {
+
+    int nP1;
+    int nP2;
+
+};
+
+
 void menu() {
     // Lógica do menu aqui
 }
 
 void jogo() {
     // Lógica do jogo aqui
-}
-
-void pvp() {
-
-    int matriz_tabuleiro[6][6] = {
-            1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0,
-            2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2
-        };
-
 }
 
 void tabuleiro_inicial(ALLEGRO_BITMAP *tabuleiro, ALLEGRO_BITMAP *peca1, ALLEGRO_BITMAP *peca2){
@@ -93,6 +88,41 @@ void tabuleiro_inicial(ALLEGRO_BITMAP *tabuleiro, ALLEGRO_BITMAP *peca1, ALLEGRO
 
 }
 
+void pvp(int coordx, int coordy, ALLEGRO_BITMAP *opcao, int vez) {
+
+    int matriz_tabuleiro[6][6] = {
+            2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2,
+            0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1
+        };
+
+    struct pecas pecaspvp;
+
+    pecaspvp.nP1 = 12;
+    pecaspvp.nP2 = 12;
+
+    int p1x[12] = {250, 310, 370, 430, 490, 550, 250, 310, 370, 430, 490, 550};
+    int p1y[12] = {435, 435, 435, 435, 435, 435, 390, 390, 390, 390, 390, 390};
+
+    int p2x[12] = {250, 310, 370, 430, 490, 550, 250, 310, 370, 430, 490, 550};
+    int p2y[12] = {150, 150, 150, 150, 150, 150, 210, 210, 210, 210, 210, 210};
+
+    if (vez == 1){
+
+
+
+
+    }
+    if(coordx >= 285 && coordx <= 335 && coordy >= 425 && coordy <= 470){
+        al_draw_bitmap(opcao, 200, 200, 0);
+    }
+    
+
+}
+
 
 int main(void) {
 
@@ -110,6 +140,9 @@ int main(void) {
     ALLEGRO_BITMAP *peca1 = al_load_bitmap("peca1.png");
     ALLEGRO_BITMAP *peca2 = al_load_bitmap("peca2.png");
     ALLEGRO_BITMAP *opcao = al_load_bitmap("opcao.png");
+    ALLEGRO_MOUSE_STATE state;
+
+
 
     font = al_create_builtin_font();
     fila_eventos = al_create_event_queue();
@@ -124,6 +157,7 @@ int main(void) {
 
     bool rodando = true;
     int situacao = 1;
+    int vez = 1;
 
      while (rodando) {
 
@@ -144,8 +178,14 @@ int main(void) {
             tabuleiro_inicial(tabuleiro, peca1, peca2);
         }
 
-        if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-            al_draw_bitmap(opcao, 200, 200, 0);
+        if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 1){
+            al_get_mouse_state(&state);
+            pvp(state.x, state.y, opcao, vez);
+        }
+
+        if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 2){
+            al_get_mouse_state(&state);
+            pvp(state.x, state.y, opcao, vez);
         }
 
         al_flip_display();
