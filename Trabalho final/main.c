@@ -7,12 +7,19 @@
 #define TAMANHO_TELA_X 800
 #define TAMANHO_TELA_Y 600
 
-struct pecas {
+typedef struct {
 
     int nP1;
     int nP2;
 
-};
+} pecas;
+
+typedef struct {
+
+    int cx;
+    int cy
+
+} posicao;
 
 
 void menu() {
@@ -24,6 +31,7 @@ void jogo() {
 }
 
 void tabuleiro_inicial(ALLEGRO_BITMAP *tabuleiro, ALLEGRO_BITMAP *peca1, ALLEGRO_BITMAP *peca2){
+
 
     int i, j = 0;
 
@@ -76,30 +84,65 @@ void tabuleiro_inicial(ALLEGRO_BITMAP *tabuleiro, ALLEGRO_BITMAP *peca1, ALLEGRO
     for(i = 0; i < 6; i++, j++){
 
         if (i == 0){
-            al_draw_bitmap(peca2, 222, 355, 0);
+            al_draw_filled_circle(222, 355, 30, al_map_rgb(0, 0, 255));
 
         }
 
         else {
-            al_draw_bitmap(peca2, (x + 60), 355, 0);
+            al_draw_filled_circle((x + 60), 355, 30, al_map_rgb(0, 0, 255));
             x += 60;
         }
     }
 
 }
 
-void pvp(int coordx, int coordy, ALLEGRO_BITMAP *opcao, int vez) {
+void teste (posicao matriz_coord[6][6], int rodadas, int vez){
 
-    int matriz_tabuleiro[6][6] = {
-            2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2,
-            0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1
-        };
+    int i, j, x, y;
 
-    struct pecas pecaspvp;
+    x = 250;
+    y = 150;
+
+    for(i = 0; i < 6; i++){
+        for(j = 0; j < 6; j++){
+            if(i == 0){
+                matriz_coord[i][j].cx = x;
+            }
+            else if (i > 0){
+                matriz_coord[i][j].cx = x + 60;
+                if (x = 550){
+                    x = 250;
+                }
+            }
+            if(j = 0){
+                matriz_coord[i][j].cy = y;
+            } else if(j = 1){
+                matriz_coord[i][j].cy = y + 60;
+            } else if(j = 2){
+                matriz_coord[i][j].cy = y + 120;
+            } else if(j = 3){
+                matriz_coord[i][j].cy = y + 180;
+            } else if(j = 4){
+                matriz_coord[i][j].cy = y + 240;
+            } else if(j = 5){
+                matriz_coord[i][j].cy = y + 300;
+            }
+        }
+    }
+
+
+
+
+}
+
+
+void pvp(int coordx, int coordy, int *vez, int *rodadas) {
+
+    posicao matriz_coord[6][6];
+    pecas pecaspvp; 
+
+    teste(matriz_coord, rodadas, vez);
+
 
     pecaspvp.nP1 = 12;
     pecaspvp.nP2 = 12;
@@ -111,14 +154,15 @@ void pvp(int coordx, int coordy, ALLEGRO_BITMAP *opcao, int vez) {
     int p2y[12] = {150, 150, 150, 150, 150, 150, 210, 210, 210, 210, 210, 210};
 
     if (vez == 1){
-
+        if(coordx >= 285 && coordx <= 335 && coordy >= 380 && coordy <= 425){
+            al_draw_filled_circle(310, 330, 25, al_map_rgb(0, 0, 255));
+        }
 
 
 
     }
-    if(coordx >= 285 && coordx <= 335 && coordy >= 425 && coordy <= 470){
-        al_draw_bitmap(opcao, 200, 200, 0);
-    }
+
+    
     
 
 }
@@ -137,9 +181,6 @@ int main(void) {
     ALLEGRO_EVENT evento;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *tabuleiro = al_load_bitmap("surakarta.png");
-    ALLEGRO_BITMAP *peca1 = al_load_bitmap("peca1.png");
-    ALLEGRO_BITMAP *peca2 = al_load_bitmap("peca2.png");
-    ALLEGRO_BITMAP *opcao = al_load_bitmap("opcao.png");
     ALLEGRO_MOUSE_STATE state;
 
 
@@ -156,8 +197,7 @@ int main(void) {
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
 
     bool rodando = true;
-    int situacao = 1;
-    int vez = 1;
+    int situacao = 1, vez = 1, rodadas = 0;
 
      while (rodando) {
 
@@ -174,18 +214,24 @@ int main(void) {
             }
         }
 
+        al_draw_bitmap(tabuleiro, 0, 0, 0);
+        rodadas++;
+
         if (situacao == 1) {
-            tabuleiro_inicial(tabuleiro, peca1, peca2);
-        }
+            
+            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 1){
+                al_get_mouse_state(&state);
+                pvp(state.x, state.y, vez, rodadas);
+                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+                
+                }
+            }
 
-        if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 1){
-            al_get_mouse_state(&state);
-            pvp(state.x, state.y, opcao, vez);
-        }
+            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 2){
+                al_get_mouse_state(&state);
+                pvp(state.x, state.y, vez, rodadas);
+            }
 
-        if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 2){
-            al_get_mouse_state(&state);
-            pvp(state.x, state.y, opcao, vez);
         }
 
         al_flip_display();
@@ -193,9 +239,6 @@ int main(void) {
     }
 
     al_destroy_bitmap(tabuleiro);
-    al_destroy_bitmap(peca1);
-    al_destroy_bitmap(peca2);
-
     al_destroy_timer(timer);
     al_destroy_display(janela);
     al_destroy_font(font);
