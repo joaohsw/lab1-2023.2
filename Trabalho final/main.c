@@ -73,64 +73,85 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
 }
 
-void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *podeJogar){
+void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *podeJogar, ALLEGRO_BITMAP *tabuleiro){
 
     int i, j;
+    int y = 0;
 
-    //while(1) {
+    for(i = 0; i < 6; i++){
+        al_draw_bitmap(tabuleiro, 0, 0, 0);
+        imprimir_matriz(matriz_coord, matriz_tabuleiro);
 
-        int y = 0;
-        for(i = 0; i < 6; i++){
-            int x = 0;
-            if (i > 0) {
-                y += 60;
-            }
+        int x = 0;
 
-
-            for(j = 0; j < 6; j++){
-                if(j > 0) {
-                    x += 60;
-                }
-
-                if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && matriz_tabuleiro[i][j] == 1){
-                    if(matriz_tabuleiro[i][j + 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i][j + 1].cx, matriz_coord[i][j + 1].cy, 20, al_map_rgb(0, 255, 0));
-                    } if(matriz_tabuleiro[i + 1][j + 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i + 1][j + 1].cx, matriz_coord[i + 1][j + 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    printf("time: %d\n", matriz_tabuleiro[i + 1][j]);
-
-                    if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i][j + 1].cx, matriz_coord[i][j + 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i + 1 < 6 && j + 1 < 6 && matriz_tabuleiro[i + 1][j + 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i + 1][j + 1].cx, matriz_coord[i + 1][j + 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i + 1 < 6 && matriz_tabuleiro[i + 1][j] == 0){
-                        al_draw_filled_circle(matriz_coord[i + 1][j].cx, matriz_coord[i + 1][j].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i - 1 >= 0 && matriz_tabuleiro[i - 1][j] == 0){
-                        al_draw_filled_circle(matriz_coord[i - 1][j].cx, matriz_coord[i - 1][j].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(j - 1 >= 0 && matriz_tabuleiro[i][j - 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i][j - 1].cx, matriz_coord[i][j - 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i - 1 >= 0 && j - 1 >= 0 && matriz_tabuleiro[i - 1][j - 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i - 1][j - 1].cx, matriz_coord[i - 1][j - 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i - 1 >= 0 && j + 1 < 6 && matriz_tabuleiro[i - 1][j + 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i - 1][j + 1].cx, matriz_coord[i - 1][j + 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-                    if(i + 1 < 6 && j - 1 >= 0 && matriz_tabuleiro[i + 1][j - 1] == 0){
-                        al_draw_filled_circle(matriz_coord[i + 1][j - 1].cx, matriz_coord[i + 1][j - 1].cy, 20, al_map_rgb(0, 255, 0));
-                    }
-
-                    *podeJogar = 1;
-                }
-            }
+        if (i > 0) {
+            y += 60;
         }
 
-    //}
+        for(j = 0; j < 6; j++){
+            if(j > 0) {
+                x += 60;
+            }
+
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && matriz_tabuleiro[i][j] == 1){
+
+                if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i][j + 1].cx, matriz_coord[i][j + 1].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+                }
+                if(i + 1 < 6 && j + 1 < 6 && matriz_tabuleiro[i + 1][j + 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i + 1][j + 1].cx, matriz_coord[i + 1][j + 1].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(i + 1 < 6 && matriz_tabuleiro[i + 1][j] == 0){
+                    al_draw_filled_circle(matriz_coord[i + 1][j].cx, matriz_coord[i + 1][j].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(i - 1 >= 0 && matriz_tabuleiro[i - 1][j] == 0){
+                    al_draw_filled_circle(matriz_coord[i - 1][j].cx, matriz_coord[i - 1][j].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(j - 1 >= 0 && matriz_tabuleiro[i][j - 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i][j - 1].cx, matriz_coord[i][j - 1].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(i - 1 >= 0 && j - 1 >= 0 && matriz_tabuleiro[i - 1][j - 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i - 1][j - 1].cx, matriz_coord[i - 1][j - 1].cy, 20, al_map_rgb(0, 255, 0));                    
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(i - 1 >= 0 && j + 1 < 6 && matriz_tabuleiro[i - 1][j + 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i - 1][j + 1].cx, matriz_coord[i - 1][j + 1].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+                if(i + 1 < 6 && j - 1 >= 0 && matriz_tabuleiro[i + 1][j - 1] == 0){
+                    al_draw_filled_circle(matriz_coord[i + 1][j - 1].cx, matriz_coord[i + 1][j - 1].cy, 20, al_map_rgb(0, 255, 0));
+                    matriz_tabuleiro[i][j] = 3;
+
+                }
+
+                *podeJogar = 1;
+
+                printf("\n");
+
+                for(i = 0; i < 6; i++){
+                    for(j = 0; j < 6; j++){
+                            printf("%4d", matriz_tabuleiro[i][j]);
+                    }
+                    printf("\n");
+                }
+
+                
+
+            }
+        }
+    }
+
     al_flip_display();
 }
 
@@ -203,7 +224,7 @@ int main(void) {
                 int mouseX = evento.mouse.x;
                 int mouseY = evento.mouse.y;
                 printf("\n x = %d  y = %d", mouseX, mouseY);
-                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar);
+                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro);
 
             }
         }
