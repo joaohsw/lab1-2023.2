@@ -57,7 +57,7 @@ void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
             }
         }
     }
-} 
+}
 
 void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
@@ -88,7 +88,7 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
     for(i = 0; i < 6; i++){
         for(j = 0; j < 6; j++){
             if(matriz_tabuleiro[i][j] == 4){
-                
+
             }
         }
     }
@@ -146,12 +146,12 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
     int i, j;
     int y = 0;
 
-    
+
 
     for(i = 0; i < 6; i++){
         al_draw_bitmap(tabuleiro, 0, 0, 0);
         imprimir_matriz(matriz_coord, matriz_tabuleiro);
-        
+
 
 
         int x = 0;
@@ -165,7 +165,31 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                 x += 60;
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *podeJogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1|| matriz_tabuleiro[i][j] == 2 && *vez == 2)){ 
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *podeJogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
+                opcoes_de_movimento(matriz_tabuleiro, i, j, podeJogar);
+                if(*podeJogar == 1){
+                    for(i = 0; i < 6; i++){
+                        for(j = 0; j < 6; j++){
+                            if(matriz_tabuleiro[i][j] == 3){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
+                            }
+                        }
+                    }
+                    *andar = 1;
+                }
+
+                printf("\n");
+
+                for(i = 0; i < 6; i++){
+                    for(j = 0; j < 6; j++){
+                            printf("%4d", matriz_tabuleiro[i][j]);
+                    }
+                    printf("\n");
+                }
+
+            }
+
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *podeJogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, podeJogar);
                 if(*podeJogar == 1){
                     for(i = 0; i < 6; i++){
@@ -205,7 +229,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                     matriz_tabuleiro[i][j] = 1;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
-                } 
+                }
             }
         }
         printf("vez : %d", *vez);
@@ -221,7 +245,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                     matriz_tabuleiro[i][j] = 2;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
-                } 
+                }
             }
         }
         *podeJogar = 0;
@@ -230,7 +254,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
     }
 
 
-} 
+}
 
 
 int main(void) {
@@ -290,23 +314,30 @@ int main(void) {
                 rodando = false;
             }
 
-            
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 int mouseX = evento.mouse.x;
                 int mouseY = evento.mouse.y;
-                printf("\n x = %d  y = %d", mouseX, mouseY);
+                printf("\n x = %d y = %d", mouseX, mouseY);
                 printf("teste\n");
                 hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar, &vez);
-                if (andar = 1){
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);  
+
+                if(vez == 1){
+                    vez++;
                 }
-            } 
-            
+                else if(vez == 2){
+                    vez--;
+                }
+
+                if (andar = 1){
+                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);
+                }
+            }
+
+
         }
 
         printf("vez = %d\n", vez);
-
 
         al_flip_display();
 
