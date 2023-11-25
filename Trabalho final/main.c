@@ -198,7 +198,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
 
     int i, j, ja_mexeu = 0;
 
-    if (*vez == 1){
+    if (*vez == 1 && ja_mexeu == 0){
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 6; j++) {
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3) {
@@ -208,11 +208,13 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 } 
             }
         }
-        *vez = 2;
+        printf("vez : %d", *vez);
         *podeJogar = 0;
+        *andar = 0;
+        ja_mexeu = 1;
     }
 
-    if (*vez == 2){
+    if (*vez == 2 && ja_mexeu == 0){
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 6; j++) {
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3) {
@@ -222,8 +224,9 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 } 
             }
         }
-        *vez = 1;
         *podeJogar = 0;
+        *andar = 0;
+        ja_mexeu = 1;
     }
 
 
@@ -259,7 +262,7 @@ int main(void) {
 
     bool rodando = true;
 
-    int situacao = 1, vez, rodadas = 0, andar = 0, podeJogar = 0;
+    int situacao = 1, vez = 1, rodadas = 0, andar = 0, podeJogar = 0;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -274,8 +277,6 @@ int main(void) {
     al_draw_bitmap(tabuleiro, 0, 0, 0);
     imprimir_matriz(matriz_coord, matriz_tabuleiro);
 
-    vez = 1;
-
     al_start_timer(timer);
 
     while (rodando) {
@@ -289,8 +290,9 @@ int main(void) {
                 rodando = false;
             }
 
+            
 
-            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 1){
+            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 int mouseX = evento.mouse.x;
                 int mouseY = evento.mouse.y;
                 printf("\n x = %d  y = %d", mouseX, mouseY);
@@ -299,27 +301,17 @@ int main(void) {
                 if (andar = 1){
                     peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);  
                 }
-            }
-
-
-            printf("vez = %d\n", vez);
-
-            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && vez == 2){
-                int mouseX = evento.mouse.x;
-                int mouseY = evento.mouse.y;
-                printf("\n x = %d  y = %d", mouseX, mouseY);
-                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar, &vez);
-                if (andar = 1){
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);               
-                }
-                podeJogar = 0;
-            }
-
+            } 
+            
         }
+
+        printf("vez = %d\n", vez);
+
 
         al_flip_display();
 
     }
+
 
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(tabuleiro);
