@@ -286,7 +286,7 @@ int main(void) {
 
     bool rodando = true;
 
-    int situacao = 1, vez = 1, rodadas = 0, andar = 0, podeJogar = 0;
+    int situacao = 1, vez = 2, rodadas = 0, andar = 0, podeJogar = 0, clicks = 0;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -316,11 +316,15 @@ int main(void) {
 
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+                clicks++;
                 int mouseX = evento.mouse.x;
                 int mouseY = evento.mouse.y;
                 printf("\n x = %d y = %d", mouseX, mouseY);
-                printf("teste\n");
-                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar, &vez);
+                printf("clicks: %d\n", clicks);
+
+                if (andar = 1){
+                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);
+                }
 
                 if(vez == 1){
                     vez++;
@@ -329,9 +333,10 @@ int main(void) {
                     vez--;
                 }
 
-                if (andar = 1){
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);
-                }
+                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar, &vez);
+
+
+
             }
 
 
