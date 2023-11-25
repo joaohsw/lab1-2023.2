@@ -43,7 +43,7 @@ void jogo() {
     // Lógica do jogo aqui
 }
 
-/*int limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
+void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
 
     int i, j;
 
@@ -57,8 +57,7 @@ void jogo() {
             }
         }
     }
-
-} */
+} 
 
 void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
@@ -86,37 +85,29 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
         }
     }
 
-}
-
-void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coordx, int coordy, int *andar) {
-
-    int i, j;
-
-    for (i = 0; i < 6; i++) {
-        for (j = 0; j < 6; j++) {
-            if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25) {
-                printf("teste2\n");
-                if (matriz_tabuleiro[i][j] == 3){
-                    matriz_tabuleiro[i][j] = 1;
-                    imprimir_matriz(matriz_coord, matriz_tabuleiro);
-                }
-                else if (matriz_tabuleiro[i][j] == 0){
-                    
-                }
+    for(i = 0; i < 6; i++){
+        for(j = 0; j < 6; j++){
+            if(matriz_tabuleiro[i][j] == 4){
+                
             }
         }
     }
-} 
+
+}
+
 
 void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *podeJogar, ALLEGRO_BITMAP *tabuleiro, int *andar){
 
     int i, j;
     int y = 0;
 
+    
+
     for(i = 0; i < 6; i++){
         al_draw_bitmap(tabuleiro, 0, 0, 0);
         imprimir_matriz(matriz_coord, matriz_tabuleiro);
-        //matriz_tabuleiro[6][6] = limpar_matriz_tabuleiro(matriz_tabuleiro);
+        
+
 
         int x = 0;
 
@@ -129,7 +120,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                 x += 60;
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && matriz_tabuleiro[i][j] == 1 && *podeJogar == 0){
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && matriz_tabuleiro[i][j] == 1 && *podeJogar == 0){ 
 
                 if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
                     matriz_tabuleiro[i][j + 1] = 3;
@@ -183,8 +174,6 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                     *andar = 1;
                 }
 
-
-
                 printf("\n");
 
                 for(i = 0; i < 6; i++){
@@ -200,6 +189,24 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
     al_flip_display();
 }
+
+void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coordx, int coordy, int *andar, ALLEGRO_BITMAP *tabuleiro, int *podeJogar) {
+
+    int i, j, ja_mexeu = 0;
+
+    for (i = 0; i < 6; i++) {
+        for (j = 0; j < 6; j++) {
+            if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3) {
+                matriz_tabuleiro[i][j] = 1;
+                imprimir_matriz(matriz_coord, matriz_tabuleiro);
+                limpar_matriz_tabuleiro(matriz_tabuleiro);
+                
+            }
+            else if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && (matriz_tabuleiro[i][j] == 4 || matriz_tabuleiro[i][j] == 0)){
+            }
+        }
+    }
+} 
 
 
 
@@ -263,7 +270,7 @@ int main(void) {
                 printf("\n x = %d  y = %d", mouseX, mouseY);
                 hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar);
                 if (andar = 1){
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar);               
+                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar);               
                 }
             }
         }
