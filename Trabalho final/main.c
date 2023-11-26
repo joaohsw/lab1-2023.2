@@ -96,52 +96,52 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 }
 
 
-void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *podeJogar){
+void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jogar){
 
     if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
         matriz_tabuleiro[i][j + 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i + 1 < 6 && j + 1 < 6 && matriz_tabuleiro[i + 1][j + 1] == 0){
         matriz_tabuleiro[i + 1][j + 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i + 1 < 6 && matriz_tabuleiro[i + 1][j] == 0){
         matriz_tabuleiro[i + 1][j] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i - 1 >= 0 && matriz_tabuleiro[i - 1][j] == 0){
         matriz_tabuleiro[i - 1][j] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(j - 1 >= 0 && matriz_tabuleiro[i][j - 1] == 0){
         matriz_tabuleiro[i][j - 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i - 1 >= 0 && j - 1 >= 0 && matriz_tabuleiro[i - 1][j - 1] == 0){
         matriz_tabuleiro[i - 1][j - 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i - 1 >= 0 && j + 1 < 6 && matriz_tabuleiro[i - 1][j + 1] == 0){
         matriz_tabuleiro[i - 1][j + 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
     if(i + 1 < 6 && j - 1 >= 0 && matriz_tabuleiro[i + 1][j - 1] == 0){
         matriz_tabuleiro[i + 1][j - 1] = 3;
         matriz_tabuleiro[i][j] = 4;
-        *podeJogar = 1;
+        *pode_jogar = 1;
     }
 
 }
 
-void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *podeJogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
+void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
 
     int i, j;
     int y = 0;
@@ -165,9 +165,9 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                 x += 60;
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *podeJogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
-                opcoes_de_movimento(matriz_tabuleiro, i, j, podeJogar);
-                if(*podeJogar == 1){
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
+                opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
+                if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
                             if(matriz_tabuleiro[i][j] == 3){
@@ -189,9 +189,9 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *podeJogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2)){
-                opcoes_de_movimento(matriz_tabuleiro, i, j, podeJogar);
-                if(*podeJogar == 1){
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2)){
+                opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
+                if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
                             if(matriz_tabuleiro[i][j] == 3){
@@ -237,7 +237,7 @@ void bug_fix(int matriz_tabuleiro[6][6], int *vez){
     }
 }
 
-void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coordx, int coordy, int *andar, ALLEGRO_BITMAP *tabuleiro, int *podeJogar, int *vez) {
+void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coordx, int coordy, int *andar, ALLEGRO_BITMAP *tabuleiro, int *pode_jogar, int *vez, bool *se_moveu) {
 
     int i, j, ja_mexeu = 0;
 
@@ -248,6 +248,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                     matriz_tabuleiro[i][j] = 1;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
+                    *se_moveu = true;
                 }
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] != 3) {
                     bug_fix(matriz_tabuleiro, vez);
@@ -255,7 +256,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 }
             }
         }
-        *podeJogar = 0;
+        *pode_jogar = 0;
         *andar = 0;
         ja_mexeu = 1;
     }
@@ -267,6 +268,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                     matriz_tabuleiro[i][j] = 2;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
+                    *se_moveu = true;
                 }
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] != 3) {
                     bug_fix(matriz_tabuleiro, vez);
@@ -274,7 +276,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 }
             }
         }
-        *podeJogar = 0;
+        *pode_jogar = 0;
         *andar = 0;
         ja_mexeu = 1;
     }
@@ -312,7 +314,7 @@ int main(void) {
 
     bool rodando = true;
 
-    int situacao = 1, vez = 1, rodadas = 0, andar = 0, podeJogar = 0, clicks = 0;
+    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -349,21 +351,20 @@ int main(void) {
                 printf("\n x = %d y = %d", mouseX, mouseY);
                 printf("clicks: %d\n", clicks);
 
-                if (andar = 1){
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &podeJogar, &vez);
+                if (andar == 1){
+                    bool se_moveu;
+                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &pode_jogar, &vez, &se_moveu);
+                    if (se_moveu == true){
+                        if(vez == 1){
+                            vez = 2;
+                        }
+                        else if(vez == 2){
+                            vez = 1;
+                        }
+                    }
                 }
 
-                if(vez == 1){
-                    vez++;
-                }
-                else if(vez == 2){
-                    vez--;
-                }
-
-                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &podeJogar, tabuleiro, &andar, &vez);
-
-
-
+                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
             }
 
 
