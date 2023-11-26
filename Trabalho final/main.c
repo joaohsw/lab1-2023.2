@@ -371,7 +371,7 @@ int main(void) {
                 printf("clicks: %d\n", clicks);
 
                 if (andar == 1){
-                    bool se_moveu;
+                    bool se_moveu = false;
                     peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &pode_jogar, &vez, &se_moveu);
                     if (se_moveu == true){
                         if(vez == 1){
