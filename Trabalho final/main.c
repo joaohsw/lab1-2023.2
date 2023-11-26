@@ -95,6 +95,24 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
 }
 
+void pode_atacar(int matriz_tabuleiro[6][6], int *pode_jogar, int *vez){
+
+    int i, j;
+    int linha_cima[6] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][1], matriz_tabuleiro[1][2], matriz_tabuleiro[1][3], matriz_tabuleiro[1][4], matriz_tabuleiro[1][5]};
+    int linha_baixo[6] = {matriz_tabuleiro[4][0], matriz_tabuleiro[4][1], matriz_tabuleiro[4][2], matriz_tabuleiro[4][3], matriz_tabuleiro[4][4], matriz_tabuleiro[4][5]};
+    int coluna_esquerda[6] = {matriz_tabuleiro[0][1], matriz_tabuleiro[1][1], matriz_tabuleiro[2][1], matriz_tabuleiro[3][1], matriz_tabuleiro[4][1], matriz_tabuleiro[5][1]};
+    int coluna_direita[6] = {matriz_tabuleiro[0][4], matriz_tabuleiro[1][4], matriz_tabuleiro[2][4], matriz_tabuleiro[3][4], matriz_tabuleiro[4][4], matriz_tabuleiro[5][4]};
+
+
+    if(*pode_jogar == 1 && *vez == 1){
+        for(i = 0; i < 6; i++){
+            for(j = 0; j < 6; j++){
+                
+                
+            }
+        }
+    }
+}
 
 void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jogar){
 
@@ -167,6 +185,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
+                pode_atacar(matriz_tabuleiro, pode_jogar, vez);
                 if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
@@ -302,7 +321,7 @@ int main(void) {
 
     font = al_create_builtin_font();
     fila_eventos = al_create_event_queue();
-    fps = al_create_timer(1.0 / 30.0);
+    fps = al_create_timer(1.0 / 60.0);
     timer = al_create_timer(1.0);
     al_start_timer(fps);
 
@@ -342,7 +361,7 @@ int main(void) {
             if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                 rodando = false;
             }
-
+            
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 clicks++;
@@ -367,18 +386,17 @@ int main(void) {
                 hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
             }
 
+            //printf("vez = %d\n", vez);
 
-        }
-
-        //printf("vez = %d\n", vez);
-
-        al_flip_display();
+            al_flip_display();
 
     }
+}
 
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(tabuleiro);
     al_destroy_timer(timer);
+    al_destroy_timer(fps);
     al_destroy_display(janela);
     al_destroy_font(font);
 
