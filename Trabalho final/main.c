@@ -56,6 +56,30 @@ void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
     al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10, al_map_rgb(0, 255, 255));
     al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
     al_flip_display();
+
+}
+
+void tela_pause(int mouseX, int mouseY, game_state *estado, ALLEGRO_FONT *font_corpo) {
+
+    const char *texto = "Continuar";
+    const char *texto2 = "Sair";
+    int texto_comprimento = al_get_text_width(font_corpo, texto);
+    int texto_altura = al_get_font_line_height(font_corpo);
+    int continue_x = TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10;
+    int continue_y = TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10;
+    int continue_width = texto_comprimento + 20;
+    int continue_height = texto_altura + 20;
+
+    int exit_x = continue_x;
+    int exit_y = continue_y + continue_height + 10; 
+
+    al_draw_filled_rectangle(continue_x, continue_y, continue_x + continue_width, continue_y + continue_height, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, continue_y + continue_height / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
+
+    al_draw_filled_rectangle(exit_x, exit_y, exit_x + continue_width, exit_y + continue_height, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, exit_y + continue_height / 2 - continue_height / 2, ALLEGRO_ALIGN_CENTRE, texto2);
+    al_flip_display();        
+
 }
 
 void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
@@ -259,6 +283,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                     for(j = 0; j < 6; j++){
                             printf("%4d", matriz_tabuleiro[i][j]);
                     }
+
                     printf("\n");
                 }
 
@@ -386,11 +411,6 @@ int main(void) {
 
     posicao matriz_coord[6][6];
 
-    //al_draw_bitmap(tabuleiro, 0, 0, 0);
-                    al_draw_filled_rectangle(pause_x, pause_y, pause_x + pause_comprimento, pause_y + pause_altura, al_map_rgb(0, 255, 255));
-                    al_draw_text(font_corpo, al_map_rgb(255, 255, 255), pause_x + pause_comprimento / 2, pause_y + pause_altura / 2, ALLEGRO_ALIGN_CENTRE, text);
-    //imprimir_matriz(matriz_coord, matriz_tabuleiro);
-
     al_start_timer(timer);
 
     while (rodando) {
@@ -416,6 +436,23 @@ int main(void) {
                 }    
             }
 
+            if (estado == PAUSE){
+                int mouseX = evento.mouse.x, mouseY = evento.mouse.y;
+                const char *texto = "Continuar";
+                int texto_comprimento = al_get_text_width(font_corpo, texto);
+                int texto_altura = al_get_font_line_height(font_corpo);
+                tela_pause(mouseX, mouseY, &estado, font_corpo);
+
+                if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+                    if(mouseX >= TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10 && mouseX <= TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10 && mouseY >= TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10 && mouseY <= TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10) {
+                        estado = JOGAR;
+                    }
+                    else if (mouseX >= TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10 && mouseX <= TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10 && mouseY >= TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10 + texto_altura + 10 && mouseY <= TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10 + texto_altura + 10) {
+                        estado = MENU;
+                    }
+                }
+            }
+
             if (estado == JOGAR){
                 char tempo_texto[50];
                 int segundos = tempo;
@@ -432,7 +469,7 @@ int main(void) {
                 al_draw_filled_rectangle(TAMANHO_TELA_X - 110, 0, TAMANHO_TELA_X, 50, al_map_rgb(0, 0, 0));
                 al_draw_text(font_corpo, al_map_rgb(255, 255, 255), TAMANHO_TELA_X - 10, 10, ALLEGRO_ALIGN_RIGHT, tempo_texto);
             }
-            
+    
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 
@@ -441,6 +478,8 @@ int main(void) {
                         estado = JOGAR;
                     }
                 }
+
+                
                 if(estado == JOGAR){
 
                     clicks++;
@@ -475,15 +514,10 @@ int main(void) {
                     if(mouseX >= pause_x && mouseX <= pause_x + pause_comprimento && mouseY >= pause_y && mouseY <= pause_y + pause_altura) {
                         estado = PAUSE;
                     }
-                    
                 }
 
-                if (estado == PAUSE){
-                }
-                
+
             }
-
-            //printf("vez = %d\n", vez);
 
             al_flip_display();
 
