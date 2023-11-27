@@ -19,7 +19,8 @@ typedef enum {
     MENU,
     JOGAR,
     SAIR,
-    PAUSE
+    PAUSE,
+    AJUDA
     
 } game_state;
 
@@ -47,16 +48,27 @@ void limpaTela() {
 
 
 void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
+
     const char *texto = "Jogar";
     int texto_comprimento = al_get_text_width(font_corpo, texto);
     int texto_altura = al_get_font_line_height(font_corpo);
+
+    const char *texto2 = "Ajuda";
+    int texto_comprimento2 = al_get_text_width(font_corpo, texto2);
 
     al_clear_to_color(al_map_rgb(255, 255, 255));
     al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Surakarta");
     al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10, al_map_rgb(0, 255, 255));
     al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
-    al_flip_display();
 
+    int ajuda_y = TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10 + texto_altura + 20 + 10; 
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, ajuda_y, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, ajuda_y + texto_altura + 20, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + 10, ALLEGRO_ALIGN_CENTRE, texto2);
+
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, ajuda_y + texto_altura + 20 + 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, ajuda_y + texto_altura + 20 + 10 + texto_altura + 20, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + texto_altura + 20 + 10 + 10, ALLEGRO_ALIGN_CENTRE, "Sair");
+
+    al_flip_display();
 }
 
 void tela_pause(int mouseX, int mouseY, game_state *estado, ALLEGRO_FONT *font_corpo) {
@@ -67,18 +79,35 @@ void tela_pause(int mouseX, int mouseY, game_state *estado, ALLEGRO_FONT *font_c
     int texto_altura = al_get_font_line_height(font_corpo);
     int continue_x = TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10;
     int continue_y = TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10;
-    int continue_width = texto_comprimento + 20;
-    int continue_height = texto_altura + 20;
+    int continue_comprimento = texto_comprimento + 20;
+    int continue_altura = texto_altura + 20;
 
-    int exit_x = continue_x;
-    int exit_y = continue_y + continue_height + 10; 
+    int sair_x = continue_x;
+    int sair_y = continue_y + continue_altura + 10; 
 
-    al_draw_filled_rectangle(continue_x, continue_y, continue_x + continue_width, continue_y + continue_height, al_map_rgb(0, 255, 255));
-    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, continue_y + continue_height / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
+    al_draw_filled_rectangle(continue_x, continue_y, continue_x + continue_comprimento, continue_y + continue_altura, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, continue_y + continue_altura / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
 
-    al_draw_filled_rectangle(exit_x, exit_y, exit_x + continue_width, exit_y + continue_height, al_map_rgb(0, 255, 255));
-    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, exit_y + continue_height / 2 - continue_height / 2, ALLEGRO_ALIGN_CENTRE, texto2);
+    al_draw_filled_rectangle(sair_x, sair_y, sair_x + continue_comprimento, sair_y + continue_altura, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, sair_y + continue_altura / 2 - continue_altura / 2, ALLEGRO_ALIGN_CENTRE, texto2);
     al_flip_display();        
+
+}
+
+void pagina_ajuda (ALLEGRO_FONT *font_corpo, ALLEGRO_FONT *font_titulo) {
+
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Ajuda");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 70, ALLEGRO_ALIGN_CENTRE, "O Surakarta possui uma grade de 6x6 e apenas 12 peças;");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 100, ALLEGRO_ALIGN_CENTRE, "O objetivo do jogo é capturar as peças do adversário;");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 130, ALLEGRO_ALIGN_CENTRE, "O jogo possui dois circuitos  de 3/4 de circunferência");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 160, ALLEGRO_ALIGN_CENTRE, "(circuito interno e externo) em cada um dos quatro cantos");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 190, ALLEGRO_ALIGN_CENTRE, "do tabuleiro e cujo percurso é obrigatório no momento");
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 220, ALLEGRO_ALIGN_CENTRE, "da captura de uma peça adversária.");
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - 50, TAMANHO_TELA_Y - 50, TAMANHO_TELA_X / 2 + 50, TAMANHO_TELA_Y, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y - 40, ALLEGRO_ALIGN_CENTRE, "Voltar");
+    al_flip_display();
+
 
 }
 
@@ -472,11 +501,31 @@ int main(void) {
     
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                
+
+                const char *texto = "Teste";
+
+                int texto_comprimento = al_get_text_width(font_corpo, texto);
+                int texto_altura = al_get_font_line_height(font_corpo);
+                int botao_comprimento = texto_comprimento + 20; // width of the rectangle
+                int botao_altura = texto_altura + 20; // height of the rectangle
+                int botao_x = TAMANHO_TELA_X / 2 - botao_comprimento / 2; // x position of the rectangle
+                int botao_y = TAMANHO_TELA_Y / 2 - botao_altura / 2 - 10; // y position of the rectangle
+
                 if(estado == MENU){
-                    if(evento.mouse.x >= TAMANHO_TELA_X / 2 - 50 && evento.mouse.x <= TAMANHO_TELA_X / 2 + 50 && evento.mouse.y >= TAMANHO_TELA_Y / 2 - 25 && evento.mouse.y <= TAMANHO_TELA_Y / 2 + 25){
+
+                    if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= botao_y && evento.mouse.y <= botao_y + botao_altura){
                         estado = JOGAR;
                     }
+
+                    int ajuda_y = botao_y + botao_altura + 10;
+                    if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= ajuda_y && evento.mouse.y <= ajuda_y + botao_altura){
+                        estado = AJUDA;
+                    }
+
+                    int sair_y = ajuda_y + botao_altura + 10;
+                    if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= sair_y && evento.mouse.y <= sair_y + botao_altura){
+                        rodando = false;
+                    }   
                 }
 
                 
@@ -513,6 +562,14 @@ int main(void) {
 
                     if(mouseX >= pause_x && mouseX <= pause_x + pause_comprimento && mouseY >= pause_y && mouseY <= pause_y + pause_altura) {
                         estado = PAUSE;
+                    }
+                    
+                }
+
+                if(estado == AJUDA){
+                    pagina_ajuda(font_corpo, font_titulo);
+                    if(evento.mouse.x >= TAMANHO_TELA_X / 2 - 50 && evento.mouse.x <= TAMANHO_TELA_X / 2 + 50 && evento.mouse.y >= TAMANHO_TELA_Y - 50 && evento.mouse.y <= TAMANHO_TELA_Y){
+                        estado = MENU;
                     }
                 }
 
