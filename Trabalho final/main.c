@@ -14,6 +14,17 @@
 #define TAMANHO_TELA_X 800
 #define TAMANHO_TELA_Y 600
 
+typedef enum {
+    
+    MENU,
+    JOGAR,
+    SAIR,
+    PAUSE
+    
+} game_state;
+
+
+
 typedef struct {
 
     int nP1;
@@ -35,12 +46,16 @@ void limpaTela() {
 }
 
 
-void menu() {
-    // Lógica do menu aqui
-}
+void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
+    const char *texto = "Jogar";
+    int texto_comprimento = al_get_text_width(font_corpo, texto);
+    int texto_altura = al_get_font_line_height(font_corpo);
 
-void jogo() {
-    // Lógica do jogo aqui
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Surakarta");
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
+    al_flip_display();
 }
 
 void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
@@ -96,24 +111,41 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 }
 
 void pode_atacar(int matriz_tabuleiro[6][6], int *pode_jogar, int *vez){
-
-    int i, j;
-    int linha_cima[6] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][1], matriz_tabuleiro[1][2], matriz_tabuleiro[1][3], matriz_tabuleiro[1][4], matriz_tabuleiro[1][5]};
-    int linha_baixo[6] = {matriz_tabuleiro[4][0], matriz_tabuleiro[4][1], matriz_tabuleiro[4][2], matriz_tabuleiro[4][3], matriz_tabuleiro[4][4], matriz_tabuleiro[4][5]};
-    int coluna_esquerda[6] = {matriz_tabuleiro[0][1], matriz_tabuleiro[1][1], matriz_tabuleiro[2][1], matriz_tabuleiro[3][1], matriz_tabuleiro[4][1], matriz_tabuleiro[5][1]};
-    int coluna_direita[6] = {matriz_tabuleiro[0][4], matriz_tabuleiro[1][4], matriz_tabuleiro[2][4], matriz_tabuleiro[3][4], matriz_tabuleiro[4][4], matriz_tabuleiro[5][4]};
-
+    int i, j, k;
 
     if(*pode_jogar == 1 && *vez == 1){
         for(i = 0; i < 6; i++){
             for(j = 0; j < 6; j++){
-                
-                
+                if(matriz_tabuleiro[i][j] == 1) { // If it's player 1's piece
+
+                    // Check for opponent's pieces in the same row
+                    for(k = 0; k < 6; k++) {
+                        if(matriz_tabuleiro[i][k] == 2) { // If it's player 2's piece
+                            // Check if there's a loop line that can be followed to attack the piece
+                            if((i == 0 || i == 5) && (k > j)) {
+                                // Attack is possible
+                                // Implement the attack logic here
+                            }
+                        }
+                    }
+
+                    // Check for opponent's pieces in the same column
+                    for(k = 0; k < 6; k++) {
+                        if(matriz_tabuleiro[k][j] == 2) { // If it's player 2's piece
+                            // Check if there's a loop line that can be followed to attack the piece
+                            if((j == 0 || j == 5) && (k > i)) {
+                                // Attack is possible
+                                // Implement the attack logic here
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-}
 
+    // Similar logic for player 2
+}
 void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jogar){
 
     if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
@@ -310,30 +342,33 @@ int main(void) {
     al_init_primitives_addon();
     al_install_mouse();
     al_init_image_addon();
+    al_init_ttf_addon();
+    al_init_font_addon();
 
     ALLEGRO_DISPLAY *janela = NULL;
-    ALLEGRO_FONT *font = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT evento;
-    ALLEGRO_TIMER *fps = NULL, *timer = NULL;
+    ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *tabuleiro = al_load_bitmap("surakarta.png");
     ALLEGRO_MOUSE_STATE state;
+    ALLEGRO_FONT *font_titulo = NULL, *font_corpo = NULL;
 
-    font = al_create_builtin_font();
+    game_state estado = MENU;
+
+    font_titulo = al_load_font("./open-sans/OpenSans-BoldItalic.ttf", 52, 0);
+    font_corpo = al_load_font("./open-sans/OpenSans-Semibold.ttf", 28, 0);
     fila_eventos = al_create_event_queue();
-    fps = al_create_timer(1.0 / 60.0);
     timer = al_create_timer(1.0);
-    al_start_timer(fps);
 
     janela = al_create_display(TAMANHO_TELA_X, TAMANHO_TELA_Y);
 
     al_register_event_source(fila_eventos, al_get_display_event_source(janela));
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
-    al_register_event_source(fila_eventos, al_get_timer_event_source(fps));
+    al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
 
     bool rodando = true;
 
-    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0;
+    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -343,17 +378,30 @@ int main(void) {
         1, 1, 1, 1, 1, 1
     };
 
+    int pause_x = TAMANHO_TELA_X - 100;
+    int pause_y = 300;
+    int pause_comprimento = 80;
+    int pause_altura = 50;
+    char text[] = "Pause";
+
     posicao matriz_coord[6][6];
 
-    al_draw_bitmap(tabuleiro, 0, 0, 0);
-    imprimir_matriz(matriz_coord, matriz_tabuleiro);
+    //al_draw_bitmap(tabuleiro, 0, 0, 0);
+                    al_draw_filled_rectangle(pause_x, pause_y, pause_x + pause_comprimento, pause_y + pause_altura, al_map_rgb(0, 255, 255));
+                    al_draw_text(font_corpo, al_map_rgb(255, 255, 255), pause_x + pause_comprimento / 2, pause_y + pause_altura / 2, ALLEGRO_ALIGN_CENTRE, text);
+    //imprimir_matriz(matriz_coord, matriz_tabuleiro);
 
     al_start_timer(timer);
 
     while (rodando) {
 
 
+
         while(!al_is_event_queue_empty(fila_eventos)){
+
+            if(estado == MENU){
+                menu(font_titulo, font_corpo);
+            }
 
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
@@ -361,29 +409,78 @@ int main(void) {
             if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                 rodando = false;
             }
+
+            if (evento.type == ALLEGRO_EVENT_TIMER) {
+                if(estado == JOGAR){
+                    tempo++;
+                }    
+            }
+
+            if (estado == JOGAR){
+                char tempo_texto[50];
+                int segundos = tempo;
+                if(segundos == 60){
+                    minutos++;
+                    segundos = 0;
+                    tempo = 0;
+                }
+                if(minutos == 60){
+                    horas++;
+                    minutos = 0;
+                }
+                sprintf(tempo_texto, "%d:%02d:%02d", horas, minutos, segundos);
+                al_draw_filled_rectangle(TAMANHO_TELA_X - 110, 0, TAMANHO_TELA_X, 50, al_map_rgb(0, 0, 0));
+                al_draw_text(font_corpo, al_map_rgb(255, 255, 255), TAMANHO_TELA_X - 10, 10, ALLEGRO_ALIGN_RIGHT, tempo_texto);
+            }
             
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                clicks++;
-                int mouseX = evento.mouse.x;
-                int mouseY = evento.mouse.y;
-                printf("\n x = %d y = %d", mouseX, mouseY);
-                printf("clicks: %d\n", clicks);
-
-                if (andar == 1){
-                    bool se_moveu = false;
-                    peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &pode_jogar, &vez, &se_moveu);
-                    if (se_moveu == true){
-                        if(vez == 1){
-                            vez = 2;
-                        }
-                        else if(vez == 2){
-                            vez = 1;
-                        }
+                
+                if(estado == MENU){
+                    if(evento.mouse.x >= TAMANHO_TELA_X / 2 - 50 && evento.mouse.x <= TAMANHO_TELA_X / 2 + 50 && evento.mouse.y >= TAMANHO_TELA_Y / 2 - 25 && evento.mouse.y <= TAMANHO_TELA_Y / 2 + 25){
+                        estado = JOGAR;
                     }
                 }
+                if(estado == JOGAR){
 
-                hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
+                    clicks++;
+                    int mouseX = evento.mouse.x;
+                    int mouseY = evento.mouse.y;
+                    printf("\n x = %d y = %d", mouseX, mouseY);
+                    printf("clicks: %d\n", clicks);
+
+                    if (andar == 1){
+                        bool se_moveu = false;
+                        peca_andar(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &andar, tabuleiro, &pode_jogar, &vez, &se_moveu);
+                        if (se_moveu == true){
+                            if(vez == 1){
+                                vez = 2;
+                            }
+                            else if(vez == 2){
+                                vez = 1;
+                            }
+                        }
+                    }
+
+                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
+
+                    int texto_comprimento = al_get_text_width(font_corpo, text);
+                    int texto_altura = al_get_font_line_height(font_corpo);
+
+                    int x = TAMANHO_TELA_X - texto_comprimento - 20;
+
+                    al_draw_filled_rectangle(x, TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10, x + texto_comprimento + 20, TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10, al_map_rgb(0, 255, 255));
+                    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), x + 10, TAMANHO_TELA_Y / 2 - texto_altura / 2, ALLEGRO_ALIGN_LEFT, text);
+
+                    if(mouseX >= pause_x && mouseX <= pause_x + pause_comprimento && mouseY >= pause_y && mouseY <= pause_y + pause_altura) {
+                        estado = PAUSE;
+                    }
+                    
+                }
+
+                if (estado == PAUSE){
+                }
+                
             }
 
             //printf("vez = %d\n", vez);
@@ -396,9 +493,9 @@ int main(void) {
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(tabuleiro);
     al_destroy_timer(timer);
-    al_destroy_timer(fps);
     al_destroy_display(janela);
-    al_destroy_font(font);
+    al_destroy_font(font_titulo);
+    al_destroy_font(font_corpo);
 
     return 0;
 }
