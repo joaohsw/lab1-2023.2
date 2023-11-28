@@ -2,6 +2,7 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -24,15 +25,6 @@ typedef enum {
     
 } game_state;
 
-
-
-typedef struct {
-
-    int nP1;
-    int nP2;
-
-} pecas;
-
 typedef struct {
 
     int cx;
@@ -45,7 +37,6 @@ void limpaTela() {
  system(CLEAR);
 
 }
-
 
 void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
 
@@ -69,6 +60,12 @@ void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
     al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + texto_altura + 20 + 10 + 10, ALLEGRO_ALIGN_CENTRE, "Sair");
 
     al_flip_display();
+}
+
+void tela_vitoria(){
+
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+
 }
 
 void tela_pause(int mouseX, int mouseY, game_state *estado, ALLEGRO_FONT *font_corpo) {
@@ -123,6 +120,9 @@ void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
             if(matriz_tabuleiro[i][j] == 4){
                 matriz_tabuleiro[i][j] = 0;
             }
+            if(matriz_tabuleiro[i][j] == 5){
+                matriz_tabuleiro[i][j] = 0;
+            }
         }
     }
 }
@@ -163,106 +163,7 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
 }
 
-void pode_atacar(int matriz_tabuleiro[6][6], int *pode_jogar, int *vez, int i, int j){
-    
-    int circuito_dentro[24] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][1], matriz_tabuleiro[1][2], matriz_tabuleiro[1][3], matriz_tabuleiro[1][4], matriz_tabuleiro[1][5], matriz_tabuleiro[0][4], matriz_tabuleiro[1][4], matriz_tabuleiro[2][4], matriz_tabuleiro[3][4], matriz_tabuleiro[4][4], matriz_tabuleiro[5][4], matriz_tabuleiro[4][5], matriz_tabuleiro[4][4], matriz_tabuleiro[4][3], matriz_tabuleiro[4][2], matriz_tabuleiro[4][1], matriz_tabuleiro[4][0], matriz_tabuleiro[5][1], matriz_tabuleiro[4][1], matriz_tabuleiro[3][1], matriz_tabuleiro[2][1], matriz_tabuleiro[1][1], matriz_tabuleiro[0][1]};
-    int circuito_fora[24] = {matriz_tabuleiro[3][0], matriz_tabuleiro[3][1], matriz_tabuleiro[3][2], matriz_tabuleiro[3][3], matriz_tabuleiro[3][4], matriz_tabuleiro[3][5], matriz_tabuleiro[0][3], matriz_tabuleiro[1][3], matriz_tabuleiro[2][3], matriz_tabuleiro[3][3], matriz_tabuleiro[4][3], matriz_tabuleiro[5][3], matriz_tabuleiro[3][5], matriz_tabuleiro[3][4], matriz_tabuleiro[3][3], matriz_tabuleiro[3][2], matriz_tabuleiro[3][1], matriz_tabuleiro[3][0], matriz_tabuleiro[5][2], matriz_tabuleiro[4][2], matriz_tabuleiro[3][2], matriz_tabuleiro[2][2], matriz_tabuleiro[1][2], matriz_tabuleiro[0][2]};
 
-    int posicao_dentro, posicao_fora;
-
-    bool no_circuito_dentro = false, no_circuito_fora = false, pode_comer = false, deu_volta = false, passou_checkpoint = false, parou = false;
-
-    int k, l;
-    int posicao_peca_a_ser_comida, posicao_peca_a_ser_comida2;
-    int checkpoints_dentro[8] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][5], matriz_tabuleiro[0][4], matriz_tabuleiro[5][4], matriz_tabuleiro[4][5], matriz_tabuleiro[4][0], matriz_tabuleiro[5][1], matriz_tabuleiro[0][1]};
-    int checkpoints_fora[8] = {matriz_tabuleiro[3][0], matriz_tabuleiro[3][5], matriz_tabuleiro[0][3], matriz_tabuleiro[5][3], matriz_tabuleiro[3][5], matriz_tabuleiro[3][0], matriz_tabuleiro[5][2], matriz_tabuleiro[0][2]};
-
-    for(k = 0; k < 24; k++){;
-        if(circuito_dentro[i] == 4){
-            no_circuito_dentro = true;
-            posicao_dentro = i;
-        }
-        if(circuito_fora[i] == 4){
-            no_circuito_fora = true;
-            posicao_fora = i;
-        }
-    }
-
-    // implementar ataque
-
-    if(no_circuito_dentro == true && *vez == 1){
-
-        int posicao_dentro2 = posicao_dentro;
-
-        for(k = 0; k < 6; k++){
-            for(l = 0; l < 6; l++){
-                if(matriz_tabuleiro[k][l] == 4){
-                    for(int aux = k; aux < 6; aux++){
-                        if(matriz_tabuleiro[aux][l] == 1 || matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == false){
-                            parou = true;
-                            break;
-                        }
-                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
-                            passou_checkpoint = true;
-                        }
-                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
-                            pode_comer = true;
-                            matriz_tabuleiro[aux][l] = 5;
-                        }   
-                    }
-
-                    parou = false;
-                    passou_checkpoint = false;
-                    pode_comer = false;
-
-                    for(int aux = k; aux >= 0; aux++){
-                        if(matriz_tabuleiro[aux][l] == 1 || matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == false){
-                            parou = true;
-                            break;
-                        }
-                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
-                            passou_checkpoint = true;
-                        }
-                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
-                            pode_comer = true;
-                            matriz_tabuleiro[aux][l] = 5;
-                        }
-                    }
-
-                    parou = false;
-                    passou_checkpoint = false;
-                    pode_comer = false;
-
-                    for(int aux = l; aux < 6; aux++){
-                        if(matriz_tabuleiro[k][aux] == 1 || matriz_tabuleiro[k][aux] == 2 && passou_checkpoint == false){
-                            parou = true;
-                            break;
-                        }
-                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
-                            passou_checkpoint = true;
-                        }
-                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
-                            pode_comer = true;
-                            matriz_tabuleiro[aux][l] = 5;
-                        }   
-                    }
-                    
-                }
-            }
-        }
-
-
-        deu_volta = false;
-        pode_comer = false;
-        passou_checkpoint = false;
-
-    }
-
-    if(no_circuito_fora){
-        
-    }
-
-} 
 void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jogar){
 
     if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
@@ -308,7 +209,51 @@ void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jog
 
 }
 
-void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
+void ataque(int matriz_tabuleiro[6][6], int i, int j, int *vez){
+
+    bool passou_checkpoint = false;
+    int posicao_peca_a_ser_comida = -1;
+
+    for(int k = i; k < 6; k++){
+        if(matriz_tabuleiro[k][j] == *vez){
+            break;
+        }
+        if(matriz_tabuleiro[k][j] == 0){
+            passou_checkpoint = true;
+        }
+        if(passou_checkpoint && matriz_tabuleiro[k][j] == (*vez % 2) + 1){
+            posicao_peca_a_ser_comida = k;
+            break;
+        }
+    }
+
+    if(posicao_peca_a_ser_comida != -1){
+        matriz_tabuleiro[posicao_peca_a_ser_comida][j] = 5;
+    }
+
+    passou_checkpoint = false;
+    posicao_peca_a_ser_comida = -1;
+
+    for(int k = i; k >= 0; k--){
+        if(matriz_tabuleiro[k][j] == *vez){
+            break;
+        }
+        if(matriz_tabuleiro[k][j] == 0){
+            passou_checkpoint = true;
+        }
+        if(passou_checkpoint && matriz_tabuleiro[k][j] == (*vez % 2) + 1){
+            posicao_peca_a_ser_comida = k;
+            break;
+        }
+    }
+
+    if(posicao_peca_a_ser_comida != -1){
+        matriz_tabuleiro[posicao_peca_a_ser_comida][j] = 5 ;
+    }
+ 
+}
+
+void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez, int *n_pecas1, int *n_pecas2){
 
     int i, j;
     int y = 0;
@@ -318,8 +263,6 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
     for(i = 0; i < 6; i++){
         al_draw_bitmap(tabuleiro, 0, 0, 0);
         imprimir_matriz(matriz_coord, matriz_tabuleiro);
-
-
 
         int x = 0;
 
@@ -334,7 +277,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
-                pode_atacar(matriz_tabuleiro, pode_jogar, vez, i, j);
+                ataque(matriz_tabuleiro, i, j, vez);
                 if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
@@ -363,11 +306,16 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
+                ataque(matriz_tabuleiro, i, j, vez);
                 if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
                             if(matriz_tabuleiro[i][j] == 3){
-                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));  
+                            }
+                            if(matriz_tabuleiro[i][j] == 5){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 25, al_map_rgb(0, 0, 255));
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));    
                             }
                         }
                     }
@@ -383,6 +331,20 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
                     printf("\n");
                 }
+            }
+        }
+    }
+
+    for(i = 0; i < 6; i++){
+        for(j = 0; j < 6; j++){
+            int cont1 = 0, cont2 = 0;
+            if(matriz_tabuleiro[i][j] == 1){
+                cont1++;
+                *n_pecas1 = cont1;
+            }
+            if(matriz_tabuleiro[i][j] == 2){
+                cont2++;
+                *n_pecas2 = cont2;
             }
         }
     }
@@ -429,15 +391,17 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 }
             }
         }
+
         *pode_jogar = 0;
         *andar = 0;
         ja_mexeu = 1;
+
     }
 
     if (*vez == 2 && ja_mexeu == 0){
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 6; j++) {
-                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3) {
+                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5) {
                     matriz_tabuleiro[i][j] = 2;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
@@ -449,12 +413,12 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 }
             }
         }
+
         *pode_jogar = 0;
         *andar = 0;
         ja_mexeu = 1;
+
     }
-
-
 }
 
 
@@ -490,7 +454,7 @@ int main(void) {
 
     bool rodando = true;
 
-    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0;
+    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0, n_pecas1 = 12, n_pecas2 = 12;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -562,6 +526,7 @@ int main(void) {
                     horas++;
                     minutos = 0;
                 }
+
                 sprintf(tempo_texto, "%d:%02d:%02d", horas, minutos, segundos);
                 al_draw_filled_rectangle(TAMANHO_TELA_X - 110, 0, TAMANHO_TELA_X, 50, al_map_rgb(0, 0, 0));
                 al_draw_text(font_corpo, al_map_rgb(255, 255, 255), TAMANHO_TELA_X - 10, 10, ALLEGRO_ALIGN_RIGHT, tempo_texto);
@@ -603,7 +568,7 @@ int main(void) {
                     int mouseX = evento.mouse.x;
                     int mouseY = evento.mouse.y;
                     printf("\n x = %d y = %d", mouseX, mouseY);
-                    printf("clicks: %d\n", clicks);
+                    printf("\nclicks: %d\n", clicks);
 
                     if (andar == 1){
                         bool se_moveu = false;
@@ -618,7 +583,7 @@ int main(void) {
                         }
                     }
 
-                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
+                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez, &n_pecas1, &n_pecas2);
 
                     int texto_comprimento = al_get_text_width(font_corpo, text);
                     int texto_altura = al_get_font_line_height(font_corpo);
@@ -641,6 +606,13 @@ int main(void) {
                     }
                 }
 
+                if(estado == JOGAR){
+                    if(n_pecas1 == 0){
+                        printf("\nVITORIA VERMELHO");
+                        tela_vitoria();
+                    }
+                }
+
 
             }
 
@@ -657,4 +629,5 @@ int main(void) {
     al_destroy_font(font_corpo);
 
     return 0;
+    
 }
