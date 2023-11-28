@@ -21,7 +21,8 @@ typedef enum {
     JOGAR,
     SAIR,
     PAUSE,
-    AJUDA
+    AJUDA,
+    FIM
     
 } game_state;
 
@@ -253,12 +254,10 @@ void ataque(int matriz_tabuleiro[6][6], int i, int j, int *vez){
  
 }
 
-void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez, int *n_pecas1, int *n_pecas2){
+void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
 
     int i, j;
     int y = 0;
-
-
 
     for(i = 0; i < 6; i++){
         al_draw_bitmap(tabuleiro, 0, 0, 0);
@@ -335,20 +334,6 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
         }
     }
 
-    for(i = 0; i < 6; i++){
-        for(j = 0; j < 6; j++){
-            int cont1 = 0, cont2 = 0;
-            if(matriz_tabuleiro[i][j] == 1){
-                cont1++;
-                *n_pecas1 = cont1;
-            }
-            if(matriz_tabuleiro[i][j] == 2){
-                cont2++;
-                *n_pecas2 = cont2;
-            }
-        }
-    }
-
     al_flip_display();
 }
 
@@ -379,7 +364,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
     if (*vez == 1 && ja_mexeu == 0){
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 6; j++) {
-                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && (matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5)) {
+                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && (matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5)) { 
                     matriz_tabuleiro[i][j] = 1;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
@@ -477,7 +462,6 @@ int main(void) {
     while (rodando) {
 
 
-
         while(!al_is_event_queue_empty(fila_eventos)){
 
             if(estado == MENU){
@@ -539,10 +523,10 @@ int main(void) {
 
                 int texto_comprimento = al_get_text_width(font_corpo, texto);
                 int texto_altura = al_get_font_line_height(font_corpo);
-                int botao_comprimento = texto_comprimento + 20; // width of the rectangle
-                int botao_altura = texto_altura + 20; // height of the rectangle
-                int botao_x = TAMANHO_TELA_X / 2 - botao_comprimento / 2; // x position of the rectangle
-                int botao_y = TAMANHO_TELA_Y / 2 - botao_altura / 2 - 10; // y position of the rectangle
+                int botao_comprimento = texto_comprimento + 20;
+                int botao_altura = texto_altura + 20; 
+                int botao_x = TAMANHO_TELA_X / 2 - botao_comprimento / 2;
+                int botao_y = TAMANHO_TELA_Y / 2 - botao_altura / 2 - 10; 
 
                 if(estado == MENU){
 
@@ -583,7 +567,7 @@ int main(void) {
                         }
                     }
 
-                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez, &n_pecas1, &n_pecas2);
+                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
 
                     int texto_comprimento = al_get_text_width(font_corpo, text);
                     int texto_altura = al_get_font_line_height(font_corpo);
@@ -606,20 +590,30 @@ int main(void) {
                     }
                 }
 
+                printf("\nn_pecas1: %d", n_pecas1);
+                printf("\nn_pecas2: %d", n_pecas2);
+
                 if(estado == JOGAR){
                     if(n_pecas1 == 0){
                         printf("\nVITORIA VERMELHO");
-                        tela_vitoria();
+                        estado = FIM;
+                    }
+                    else if(n_pecas2 == 0){
+                        printf("\nVITORIA AZUL");
+                        estado = FIM;
                     }
                 }
 
+                if(estado == FIM){
+                    tela_vitoria();
+                }
 
             }
 
             al_flip_display();
 
+        }
     }
-}
 
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(tabuleiro);
