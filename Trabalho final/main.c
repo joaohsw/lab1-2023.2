@@ -163,42 +163,106 @@ void imprimir_matriz (posicao matriz_coord[6][6], int matriz_tabuleiro[6][6]){
 
 }
 
-void pode_atacar(int matriz_tabuleiro[6][6], int *pode_jogar, int *vez){
-    int i, j, k;
+void pode_atacar(int matriz_tabuleiro[6][6], int *pode_jogar, int *vez, int i, int j){
+    
+    int circuito_dentro[24] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][1], matriz_tabuleiro[1][2], matriz_tabuleiro[1][3], matriz_tabuleiro[1][4], matriz_tabuleiro[1][5], matriz_tabuleiro[0][4], matriz_tabuleiro[1][4], matriz_tabuleiro[2][4], matriz_tabuleiro[3][4], matriz_tabuleiro[4][4], matriz_tabuleiro[5][4], matriz_tabuleiro[4][5], matriz_tabuleiro[4][4], matriz_tabuleiro[4][3], matriz_tabuleiro[4][2], matriz_tabuleiro[4][1], matriz_tabuleiro[4][0], matriz_tabuleiro[5][1], matriz_tabuleiro[4][1], matriz_tabuleiro[3][1], matriz_tabuleiro[2][1], matriz_tabuleiro[1][1], matriz_tabuleiro[0][1]};
+    int circuito_fora[24] = {matriz_tabuleiro[3][0], matriz_tabuleiro[3][1], matriz_tabuleiro[3][2], matriz_tabuleiro[3][3], matriz_tabuleiro[3][4], matriz_tabuleiro[3][5], matriz_tabuleiro[0][3], matriz_tabuleiro[1][3], matriz_tabuleiro[2][3], matriz_tabuleiro[3][3], matriz_tabuleiro[4][3], matriz_tabuleiro[5][3], matriz_tabuleiro[3][5], matriz_tabuleiro[3][4], matriz_tabuleiro[3][3], matriz_tabuleiro[3][2], matriz_tabuleiro[3][1], matriz_tabuleiro[3][0], matriz_tabuleiro[5][2], matriz_tabuleiro[4][2], matriz_tabuleiro[3][2], matriz_tabuleiro[2][2], matriz_tabuleiro[1][2], matriz_tabuleiro[0][2]};
 
-    if(*pode_jogar == 1 && *vez == 1){
-        for(i = 0; i < 6; i++){
-            for(j = 0; j < 6; j++){
-                if(matriz_tabuleiro[i][j] == 1) { // If it's player 1's piece
+    int posicao_dentro, posicao_fora;
 
-                    // Check for opponent's pieces in the same row
-                    for(k = 0; k < 6; k++) {
-                        if(matriz_tabuleiro[i][k] == 2) { // If it's player 2's piece
-                            // Check if there's a loop line that can be followed to attack the piece
-                            if((i == 0 || i == 5) && (k > j)) {
-                                // Attack is possible
-                                // Implement the attack logic here
-                            }
-                        }
-                    }
+    bool no_circuito_dentro = false, no_circuito_fora = false, pode_comer = false, deu_volta = false, passou_checkpoint = false, parou = false;
 
-                    // Check for opponent's pieces in the same column
-                    for(k = 0; k < 6; k++) {
-                        if(matriz_tabuleiro[k][j] == 2) { // If it's player 2's piece
-                            // Check if there's a loop line that can be followed to attack the piece
-                            if((j == 0 || j == 5) && (k > i)) {
-                                // Attack is possible
-                                // Implement the attack logic here
-                            }
-                        }
-                    }
-                }
-            }
+    int k, l;
+    int posicao_peca_a_ser_comida, posicao_peca_a_ser_comida2;
+    int checkpoints_dentro[8] = {matriz_tabuleiro[1][0], matriz_tabuleiro[1][5], matriz_tabuleiro[0][4], matriz_tabuleiro[5][4], matriz_tabuleiro[4][5], matriz_tabuleiro[4][0], matriz_tabuleiro[5][1], matriz_tabuleiro[0][1]};
+    int checkpoints_fora[8] = {matriz_tabuleiro[3][0], matriz_tabuleiro[3][5], matriz_tabuleiro[0][3], matriz_tabuleiro[5][3], matriz_tabuleiro[3][5], matriz_tabuleiro[3][0], matriz_tabuleiro[5][2], matriz_tabuleiro[0][2]};
+
+    for(k = 0; k < 24; k++){;
+        if(circuito_dentro[i] == 4){
+            no_circuito_dentro = true;
+            posicao_dentro = i;
+        }
+        if(circuito_fora[i] == 4){
+            no_circuito_fora = true;
+            posicao_fora = i;
         }
     }
 
-    // Similar logic for player 2
-}
+    // implementar ataque
+
+    if(no_circuito_dentro == true && *vez == 1){
+
+        int posicao_dentro2 = posicao_dentro;
+
+        for(k = 0; k < 6; k++){
+            for(l = 0; l < 6; l++){
+                if(matriz_tabuleiro[k][l] == 4){
+                    for(int aux = k; aux < 6; aux++){
+                        if(matriz_tabuleiro[aux][l] == 1 || matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == false){
+                            parou = true;
+                            break;
+                        }
+                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
+                            passou_checkpoint = true;
+                        }
+                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
+                            pode_comer = true;
+                            matriz_tabuleiro[aux][l] = 5;
+                        }   
+                    }
+
+                    parou = false;
+                    passou_checkpoint = false;
+                    pode_comer = false;
+
+                    for(int aux = k; aux >= 0; aux++){
+                        if(matriz_tabuleiro[aux][l] == 1 || matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == false){
+                            parou = true;
+                            break;
+                        }
+                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
+                            passou_checkpoint = true;
+                        }
+                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
+                            pode_comer = true;
+                            matriz_tabuleiro[aux][l] = 5;
+                        }
+                    }
+
+                    parou = false;
+                    passou_checkpoint = false;
+                    pode_comer = false;
+
+                    for(int aux = l; aux < 6; aux++){
+                        if(matriz_tabuleiro[k][aux] == 1 || matriz_tabuleiro[k][aux] == 2 && passou_checkpoint == false){
+                            parou = true;
+                            break;
+                        }
+                        else if((matriz_tabuleiro[aux][l] == checkpoints_dentro[0] || matriz_tabuleiro[aux][l] == checkpoints_dentro[1] || matriz_tabuleiro[aux][j] == checkpoints_dentro[2] || matriz_tabuleiro[aux][j] == checkpoints_dentro[3] || matriz_tabuleiro[aux][j] == checkpoints_dentro[4] || matriz_tabuleiro[aux][j] == checkpoints_dentro[5] || matriz_tabuleiro[aux][j] == checkpoints_dentro[6] || matriz_tabuleiro[aux][j] == checkpoints_dentro[7]) && parou == false){
+                            passou_checkpoint = true;
+                        }
+                        else if(matriz_tabuleiro[aux][l] == 2 && passou_checkpoint == true){
+                            pode_comer = true;
+                            matriz_tabuleiro[aux][l] = 5;
+                        }   
+                    }
+                    
+                }
+            }
+        }
+
+
+        deu_volta = false;
+        pode_comer = false;
+        passou_checkpoint = false;
+
+    }
+
+    if(no_circuito_fora){
+        
+    }
+
+} 
 void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jogar){
 
     if(j + 1 < 6 && matriz_tabuleiro[i][j + 1] == 0){
@@ -270,11 +334,15 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
-                pode_atacar(matriz_tabuleiro, pode_jogar, vez);
+                pode_atacar(matriz_tabuleiro, pode_jogar, vez, i, j);
                 if(*pode_jogar == 1){
                     for(i = 0; i < 6; i++){
                         for(j = 0; j < 6; j++){
                             if(matriz_tabuleiro[i][j] == 3){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
+                            }
+                            if(matriz_tabuleiro[i][j] == 5){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 25, al_map_rgb(255, 0, 0));
                                 al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
                             }
                         }
@@ -315,7 +383,6 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
                     printf("\n");
                 }
-
             }
         }
     }
@@ -346,10 +413,11 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
 
     int i, j, ja_mexeu = 0;
 
+
     if (*vez == 1 && ja_mexeu == 0){
         for (i = 0; i < 6; i++) {
             for (j = 0; j < 6; j++) {
-                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3) {
+                if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && (matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5)) {
                     matriz_tabuleiro[i][j] = 1;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro);
