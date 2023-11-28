@@ -22,7 +22,8 @@ typedef enum {
     SAIR,
     PAUSE,
     AJUDA,
-    FIM
+    FIM,
+    HISTORICO
     
 } game_state;
 
@@ -41,31 +42,69 @@ void limpaTela() {
 
 void menu(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo) {
 
-    const char *texto = "Jogar";
-    int texto_comprimento = al_get_text_width(font_corpo, texto);
-    int texto_altura = al_get_font_line_height(font_corpo);
-
-    const char *texto2 = "Ajuda";
-    int texto_comprimento2 = al_get_text_width(font_corpo, texto2);
+    int button_width = 130;
+    int button_height = 45;
 
     al_clear_to_color(al_map_rgb(255, 255, 255));
     al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Surakarta");
-    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, TAMANHO_TELA_Y / 2 + texto_altura / 2 + 10, al_map_rgb(0, 255, 255));
-    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y / 2 - texto_altura / 2, ALLEGRO_ALIGN_CENTRE, texto);
 
-    int ajuda_y = TAMANHO_TELA_Y / 2 - texto_altura / 2 - 10 + texto_altura + 20 + 10; 
-    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, ajuda_y, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, ajuda_y + texto_altura + 20, al_map_rgb(0, 255, 255));
-    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + 10, ALLEGRO_ALIGN_CENTRE, texto2);
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - button_width / 2, TAMANHO_TELA_Y / 2 - button_height / 2, TAMANHO_TELA_X / 2 + button_width / 2, TAMANHO_TELA_Y / 2 + button_height / 2, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y / 2 - button_height / 2, ALLEGRO_ALIGN_CENTRE, "Jogar");
 
-    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - texto_comprimento / 2 - 10, ajuda_y + texto_altura + 20 + 10, TAMANHO_TELA_X / 2 + texto_comprimento / 2 + 10, ajuda_y + texto_altura + 20 + 10 + texto_altura + 20, al_map_rgb(0, 255, 255));
-    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + texto_altura + 20 + 10 + 10, ALLEGRO_ALIGN_CENTRE, "Sair");
+    int ajuda_y = TAMANHO_TELA_Y / 2 + button_height / 2 + 10;
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - button_width / 2, ajuda_y, TAMANHO_TELA_X / 2 + button_width / 2, ajuda_y + button_height, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + 10, ALLEGRO_ALIGN_CENTRE, "Ajuda");
+
+    ajuda_y += button_height + 10;
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - button_width / 2, ajuda_y, TAMANHO_TELA_X / 2 + button_width / 2, ajuda_y + button_height, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + 10, ALLEGRO_ALIGN_CENTRE, "Histórico");
+
+    ajuda_y += button_height + 10;
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - button_width / 2, ajuda_y, TAMANHO_TELA_X / 2 + button_width / 2, ajuda_y + button_height, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, ajuda_y + 10, ALLEGRO_ALIGN_CENTRE, "Sair");
 
     al_flip_display();
+
 }
 
-void tela_vitoria(){
+void tela_historico(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo){
 
     al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_text(font_titulo, al_map_rgb(255, 0, 255), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Histórico");
+    al_draw_rectangle(50, 50, TAMANHO_TELA_X - 50, TAMANHO_TELA_Y - 50, al_map_rgb(0, 0, 0), 2);
+
+    FILE *file = fopen("historico.txt", "r");
+    if(file != NULL){
+        char line[256];
+        int y = 70; // Start y-coordinate for text
+        while(fgets(line, sizeof(line), file)){
+            al_draw_text(font_corpo, al_map_rgb(0, 0, 0), 60, y, ALLEGRO_ALIGN_LEFT, line);
+            y += al_get_font_line_height(font_corpo); // Move y-coordinate down for the next line
+        }
+        fclose(file);
+    }
+
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - 50, TAMANHO_TELA_Y - 50, TAMANHO_TELA_X / 2 + 50, TAMANHO_TELA_Y, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y - 40, ALLEGRO_ALIGN_CENTRE, "Voltar");
+
+
+
+}
+
+
+void tela_vitoria(int ganhador, ALLEGRO_FONT *font_corpo, ALLEGRO_FONT *font_titulo){
+
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Vitória!");
+    if (ganhador == 1){
+        al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 70, ALLEGRO_ALIGN_CENTRE, "O jogador 1 venceu!");
+
+    }
+    else if (ganhador == 2){
+        al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 70, ALLEGRO_ALIGN_CENTRE, "O jogador 2 venceu!");
+    }
+    al_draw_filled_rectangle(TAMANHO_TELA_X / 2 - 50, TAMANHO_TELA_Y - 50, TAMANHO_TELA_X / 2 + 50, TAMANHO_TELA_Y, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, TAMANHO_TELA_Y - 40, ALLEGRO_ALIGN_CENTRE, "Voltar");
 
 }
 
@@ -109,7 +148,7 @@ void pagina_ajuda (ALLEGRO_FONT *font_corpo, ALLEGRO_FONT *font_titulo) {
 
 }
 
-void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
+void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6], int *vez){
 
     int i, j;
 
@@ -121,8 +160,11 @@ void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6]){
             if(matriz_tabuleiro[i][j] == 4){
                 matriz_tabuleiro[i][j] = 0;
             }
-            if(matriz_tabuleiro[i][j] == 5){
-                matriz_tabuleiro[i][j] = 0;
+            if(matriz_tabuleiro[i][j] == 5 && *vez == 2){
+                matriz_tabuleiro[i][j] = 1;
+            }
+            if(matriz_tabuleiro[i][j] == 5 && *vez == 1){
+                matriz_tabuleiro[i][j] = 2;
             }
         }
     }
@@ -211,47 +253,21 @@ void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jog
 }
 
 void ataque(int matriz_tabuleiro[6][6], int i, int j, int *vez){
-
-    bool passou_checkpoint = false;
-    int posicao_peca_a_ser_comida = -1;
-
-    for(int k = i; k < 6; k++){
-        if(matriz_tabuleiro[k][j] == *vez){
-            break;
-        }
-        if(matriz_tabuleiro[k][j] == 0){
-            passou_checkpoint = true;
-        }
-        if(passou_checkpoint && matriz_tabuleiro[k][j] == (*vez % 2) + 1){
-            posicao_peca_a_ser_comida = k;
-            break;
-        }
-    }
-
-    if(posicao_peca_a_ser_comida != -1){
-        matriz_tabuleiro[posicao_peca_a_ser_comida][j] = 5;
-    }
-
-    passou_checkpoint = false;
-    posicao_peca_a_ser_comida = -1;
-
-    for(int k = i; k >= 0; k--){
-        if(matriz_tabuleiro[k][j] == *vez){
-            break;
-        }
-        if(matriz_tabuleiro[k][j] == 0){
-            passou_checkpoint = true;
-        }
-        if(passou_checkpoint && matriz_tabuleiro[k][j] == (*vez % 2) + 1){
-            posicao_peca_a_ser_comida = k;
-            break;
+    int inimigo = (*vez == 1) ? 2 : 1;
+    int direcoes[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+    for(int d = 0; d < 8; d++){
+        int x = i, y = j;
+        while(x >= 0 && x < 6 && y >= 0 && y < 6){
+            if(matriz_tabuleiro[x][y] == inimigo){
+                matriz_tabuleiro[x][y] = 5;
+                break;
+            }
+            x += direcoes[d][0];
+            y += direcoes[d][1];
+            if(x < 0 || x >= 6) x = 5 - x;
+            if(y < 0 || y >= 6) y = 5 - y;
         }
     }
-
-    if(posicao_peca_a_ser_comida != -1){
-        matriz_tabuleiro[posicao_peca_a_ser_comida][j] = 5 ;
-    }
- 
 }
 
 void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
@@ -367,7 +383,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && (matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5)) { 
                     matriz_tabuleiro[i][j] = 1;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
-                    limpar_matriz_tabuleiro(matriz_tabuleiro);
+                    limpar_matriz_tabuleiro(matriz_tabuleiro, vez);
                     *se_moveu = true;
                 }
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] != 3) {
@@ -389,7 +405,7 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] == 3 || matriz_tabuleiro[i][j] == 5) {
                     matriz_tabuleiro[i][j] = 2;
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
-                    limpar_matriz_tabuleiro(matriz_tabuleiro);
+                    limpar_matriz_tabuleiro(matriz_tabuleiro, vez);
                     *se_moveu = true;
                 }
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] != 3) {
@@ -404,6 +420,34 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
         ja_mexeu = 1;
 
     }
+}
+
+int decidir_ganhador(int matriz_tabuleiro[6][6]){
+
+    int count1 = 0, count2 = 0, count3 = 0, count4 = 0, count5 = 0;
+    for(int i = 0; i < 6; i++){
+        for(int j = 0; j < 6; j++){
+            if(matriz_tabuleiro[i][j] == 1) {
+                count1++;
+            }
+            if(matriz_tabuleiro[i][j] == 2){
+                count2++;
+            }
+            if(matriz_tabuleiro[i][j] == 3){
+                count3++;
+            }
+            if(matriz_tabuleiro[i][j] == 4){
+                count4++;
+            }
+            if(matriz_tabuleiro[i][j] == 5){
+                count5++;
+            }
+        }
+    }
+    if(count1 == 0 && count3 == 0 && count4 == 0 && count5 == 0) return 2;
+    else if(count2 == 0 && count3 == 0 && count4 == 0 && count5 == 0) return 1;
+    else return 0;
+
 }
 
 
@@ -437,9 +481,9 @@ int main(void) {
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
 
-    bool rodando = true;
+    bool rodando = true, resultado_escrito = false;
 
-    int situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0, n_pecas1 = 12, n_pecas2 = 12;
+    int ganhador, segundos, situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0, n_pecas1 = 12, n_pecas2 = 12;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -500,7 +544,7 @@ int main(void) {
 
             if (estado == JOGAR){
                 char tempo_texto[50];
-                int segundos = tempo;
+                segundos = tempo;
                 if(segundos == 60){
                     minutos++;
                     segundos = 0;
@@ -519,12 +563,8 @@ int main(void) {
 
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
 
-                const char *texto = "Teste";
-
-                int texto_comprimento = al_get_text_width(font_corpo, texto);
-                int texto_altura = al_get_font_line_height(font_corpo);
-                int botao_comprimento = texto_comprimento + 20;
-                int botao_altura = texto_altura + 20; 
+                int botao_comprimento = 130;
+                int botao_altura = 45; 
                 int botao_x = TAMANHO_TELA_X / 2 - botao_comprimento / 2;
                 int botao_y = TAMANHO_TELA_Y / 2 - botao_altura / 2 - 10; 
 
@@ -539,7 +579,12 @@ int main(void) {
                         estado = AJUDA;
                     }
 
-                    int sair_y = ajuda_y + botao_altura + 10;
+                    int historico_y = ajuda_y + botao_altura + 10;
+                    if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= historico_y && evento.mouse.y <= historico_y + botao_altura){
+                        estado = HISTORICO;
+                    }
+
+                    int sair_y = historico_y + botao_altura + 10;
                     if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= sair_y && evento.mouse.y <= sair_y + botao_altura){
                         rodando = false;
                     }   
@@ -590,22 +635,40 @@ int main(void) {
                     }
                 }
 
+                if(estado == HISTORICO){
+                    tela_historico(font_titulo, font_corpo);
+                    if(evento.mouse.x >= TAMANHO_TELA_X / 2 - 50 && evento.mouse.x <= TAMANHO_TELA_X / 2 + 50 && evento.mouse.y >= TAMANHO_TELA_Y - 50 && evento.mouse.y <= TAMANHO_TELA_Y){
+                        estado = MENU;
+                    }
+                }
+
                 printf("\nn_pecas1: %d", n_pecas1);
                 printf("\nn_pecas2: %d", n_pecas2);
 
                 if(estado == JOGAR){
-                    if(n_pecas1 == 0){
-                        printf("\nVITORIA VERMELHO");
+                    ganhador = decidir_ganhador(matriz_tabuleiro);
+                    if(ganhador == 1){
                         estado = FIM;
                     }
-                    else if(n_pecas2 == 0){
-                        printf("\nVITORIA AZUL");
+                    else if(ganhador == 2){
                         estado = FIM;
                     }
                 }
 
                 if(estado == FIM){
-                    tela_vitoria();
+                    tela_vitoria(ganhador, font_corpo, font_titulo);
+
+                    if(!resultado_escrito){
+                        FILE *arquivo = fopen("historico.txt", "a");
+                        fprintf(arquivo, "Jogador %d venceu em %02d:%02d \n", ganhador, minutos, segundos);
+                        fclose(arquivo);
+                        resultado_escrito = true;
+                    }
+                    
+                    if(evento.mouse.x >= TAMANHO_TELA_X / 2 - 50 && evento.mouse.x <= TAMANHO_TELA_X / 2 + 50 && evento.mouse.y >= TAMANHO_TELA_Y - 50 && evento.mouse.y <= TAMANHO_TELA_Y){
+                        estado = MENU;
+                        limpaTela();
+                    }   
                 }
 
             }
