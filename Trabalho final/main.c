@@ -23,7 +23,9 @@ typedef enum {
     PAUSE,
     AJUDA,
     FIM,
-    HISTORICO
+    HISTORICO,
+    JOGAR2,
+    MODO
     
 } game_state;
 
@@ -108,6 +110,23 @@ void tela_vitoria(int ganhador, ALLEGRO_FONT *font_corpo, ALLEGRO_FONT *font_tit
 
 }
 
+void tela_modo(ALLEGRO_FONT *font_titulo, ALLEGRO_FONT *font_corpo){
+
+    int quadrado = 100;
+    int gap = 150; 
+
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_text(font_titulo, al_map_rgb(0, 0, 0), TAMANHO_TELA_X / 2, 10, ALLEGRO_ALIGN_CENTRE, "Modo de Jogo");
+
+    int x1 = TAMANHO_TELA_X / 2 - quadrado - gap / 2;
+    al_draw_filled_rectangle(x1, TAMANHO_TELA_Y / 2 - quadrado / 2, x1 + quadrado, TAMANHO_TELA_Y / 2 + quadrado / 2, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), x1 + quadrado / 2, TAMANHO_TELA_Y / 2, ALLEGRO_ALIGN_CENTRE, "PvP");
+
+    int x2 = TAMANHO_TELA_X / 2 + gap / 2;
+    al_draw_filled_rectangle(x2, TAMANHO_TELA_Y / 2 - quadrado / 2, x2 + quadrado, TAMANHO_TELA_Y / 2 + quadrado / 2, al_map_rgb(0, 255, 255));
+    al_draw_text(font_corpo, al_map_rgb(0, 0, 0), x2 + quadrado / 2, TAMANHO_TELA_Y / 2, ALLEGRO_ALIGN_CENTRE, "PvC");
+}
+
 void tela_pause(int mouseX, int mouseY, game_state *estado, ALLEGRO_FONT *font_corpo) {
 
     const char *texto = "Continuar";
@@ -148,6 +167,7 @@ void pagina_ajuda (ALLEGRO_FONT *font_corpo, ALLEGRO_FONT *font_titulo) {
 
 }
 
+
 void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6], int *vez){
 
     int i, j;
@@ -163,7 +183,7 @@ void limpar_matriz_tabuleiro(int matriz_tabuleiro[6][6], int *vez){
             if(matriz_tabuleiro[i][j] == 5 && *vez == 2){
                 matriz_tabuleiro[i][j] = 1;
             }
-            if(matriz_tabuleiro[i][j] == 5 && *vez == 1){
+            else if(matriz_tabuleiro[i][j] == 5 && *vez == 1){
                 matriz_tabuleiro[i][j] = 2;
             }
         }
@@ -254,12 +274,15 @@ void opcoes_de_movimento(int matriz_tabuleiro[6][6], int i, int j, int *pode_jog
 
 void ataque(int matriz_tabuleiro[6][6], int i, int j, int *vez){
     int inimigo = (*vez == 1) ? 2 : 1;
+    int amigo = (*vez == 1) ? 1 : 2;
     int direcoes[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
     for(int d = 0; d < 8; d++){
         int x = i, y = j;
         while(x >= 0 && x < 6 && y >= 0 && y < 6){
             if(matriz_tabuleiro[x][y] == inimigo){
                 matriz_tabuleiro[x][y] = 5;
+                break;
+            } else if(matriz_tabuleiro[x][y] == amigo) {
                 break;
             }
             x += direcoes[d][0];
@@ -270,7 +293,70 @@ void ataque(int matriz_tabuleiro[6][6], int i, int j, int *vez){
     }
 }
 
-void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez){
+int adjacente(int matriz_tabuleiro[6][6], int i, int j){
+    int direcoes[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+    for(int d = 0; d < 8; d++){
+        int x = i + direcoes[d][0];
+        int y = j + direcoes[d][1];
+        if(x >= 0 && x < 6 && y >= 0 && y < 6 && matriz_tabuleiro[x][y] == 2){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void limpar_tela_pc(int matriz_tabuleiro[6][6]){
+
+    int i, j;
+
+    for(i = 0; i < 6; i++){
+        for(j = 0; j < 6; j++){
+            if(matriz_tabuleiro[i][j] == 3){
+                matriz_tabuleiro[i][j] = 0;
+            }
+            if(matriz_tabuleiro[i][j] == 4){
+                matriz_tabuleiro[i][j] = 0;
+            }
+            if(matriz_tabuleiro[i][j] == 5){
+                matriz_tabuleiro[i][j] = 1;
+            }
+        }
+    }
+}
+
+void pc(int matriz_tabuleiro[6][6], int *vez){
+    printf("teste\n");
+    srand(time(NULL));
+    int i, j, x, y, atacar_andar = 0;
+    int direcoes[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+
+    do {
+        i = rand() % 6;
+        j = rand() % 6;
+    } while(matriz_tabuleiro[i][j] != 2);
+
+    for(int k = 0; k < 8; k++) {
+        x = i + direcoes[k][0];
+        y = j + direcoes[k][1];
+        if(x >= 0 && x < 6 && y >= 0 && y < 6 && matriz_tabuleiro[x][y] == 0) {
+            matriz_tabuleiro[x][y] = 2;
+            matriz_tabuleiro[i][j] = 0;
+            break;
+        }
+    }
+
+    do {
+        i = rand() % 6;
+        j = rand() % 6;
+    } while(matriz_tabuleiro[i][j] != 0 || !adjacente(matriz_tabuleiro, i, j));
+
+    ataque(matriz_tabuleiro, i, j, vez);
+    *vez = 1;
+    limpar_tela_pc(matriz_tabuleiro);
+
+}
+
+void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, int coordy, int *pode_jogar, ALLEGRO_BITMAP *tabuleiro, int *andar, int *vez, int *modo){
 
     int i, j;
     int y = 0;
@@ -290,7 +376,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                 x += 60;
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1)){
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1 && *modo == 2)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
                 ataque(matriz_tabuleiro, i, j, vez);
                 if(*pode_jogar == 1){
@@ -319,7 +405,7 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
 
             }
 
-            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2)){
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 2 && *vez == 2 && *modo == 2)){
                 opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
                 ataque(matriz_tabuleiro, i, j, vez);
                 if(*pode_jogar == 1){
@@ -334,6 +420,53 @@ void hitbox(int matriz_tabuleiro[6][6], posicao matriz_coord[6][6], int coordx, 
                             }
                         }
                     }
+                    *andar = 1;
+                }
+
+                printf("\n");
+
+                for(i = 0; i < 6; i++){
+                    for(j = 0; j < 6; j++){
+                            printf("%4d", matriz_tabuleiro[i][j]);
+                    }
+
+                    printf("\n");
+                }
+            }
+
+            if(coordx >= 225 + x && coordx <= 275 + x && coordy <=175 + y && coordy >= 125 + y && *pode_jogar == 0 && (matriz_tabuleiro[i][j] == 1 && *vez == 1 && *modo == 1)){
+                opcoes_de_movimento(matriz_tabuleiro, i, j, pode_jogar);
+                ataque(matriz_tabuleiro, i, j, vez);
+                if(*pode_jogar == 1){
+                    for(i = 0; i < 6; i++){
+                        for(j = 0; j < 6; j++){
+                            if(matriz_tabuleiro[i][j] == 3){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
+                            }
+                            if(matriz_tabuleiro[i][j] == 5){
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 25, al_map_rgb(255, 0, 0));
+                                al_draw_filled_circle(matriz_coord[i][j].cx, matriz_coord[i][j].cy, 20, al_map_rgb(0, 255, 0));
+                            }
+                        }
+                    }
+
+                    *andar = 1;
+                }
+
+                printf("\n");
+
+                for(i = 0; i < 6; i++){
+                    for(j = 0; j < 6; j++){
+                            printf("%4d", matriz_tabuleiro[i][j]);
+                    }
+                    printf("\n");
+                }
+
+            }
+
+            if(*modo == 1 && *vez == 2){
+                pc(matriz_tabuleiro, vez);
+                if(*pode_jogar == 1){
                     *andar = 1;
                 }
 
@@ -407,6 +540,8 @@ void peca_andar(int matriz_tabuleiro[6][6],  posicao matriz_coord[6][6], int coo
                     imprimir_matriz(matriz_coord, matriz_tabuleiro);
                     limpar_matriz_tabuleiro(matriz_tabuleiro, vez);
                     *se_moveu = true;
+
+                    
                 }
                 if (coordx >= matriz_coord[i][j].cx - 25 && coordx <= matriz_coord[i][j].cx + 25 && coordy >= matriz_coord[i][j].cy - 25 && coordy <= matriz_coord[i][j].cy + 25 && matriz_tabuleiro[i][j] != 3) {
                     bug_fix(matriz_tabuleiro, vez);
@@ -444,10 +579,17 @@ int decidir_ganhador(int matriz_tabuleiro[6][6]){
             }
         }
     }
-    if(count1 == 0 && count3 == 0 && count4 == 0 && count5 == 0) return 2;
-    else if(count2 == 0 && count3 == 0 && count4 == 0 && count5 == 0) return 1;
-    else return 0;
 
+    if(count1 == 0 && count3 == 0 && count4 == 0 && count5 == 0){
+        return 2;
+
+    }
+    else if (count2 == 0 && count3 == 0 && count4 == 0 && count5 == 0){
+        return 1;
+    } 
+    else {
+        return 0;  
+    }
 }
 
 
@@ -483,7 +625,7 @@ int main(void) {
 
     bool rodando = true, resultado_escrito = false;
 
-    int ganhador, segundos, situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0, n_pecas1 = 12, n_pecas2 = 12;
+    int ganhador, segundos, situacao = 1, vez = 1, rodadas = 0, andar = 0, pode_jogar = 0, clicks = 0, tempo = 0, minutos = 0, horas = 0, n_pecas1 = 12, n_pecas2 = 12, modo = 0;
     int matriz_tabuleiro[6][6] = {
         2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 2, 2,
@@ -558,6 +700,7 @@ int main(void) {
                 sprintf(tempo_texto, "%d:%02d:%02d", horas, minutos, segundos);
                 al_draw_filled_rectangle(TAMANHO_TELA_X - 110, 0, TAMANHO_TELA_X, 50, al_map_rgb(0, 0, 0));
                 al_draw_text(font_corpo, al_map_rgb(255, 255, 255), TAMANHO_TELA_X - 10, 10, ALLEGRO_ALIGN_RIGHT, tempo_texto);
+
             }
     
 
@@ -571,7 +714,7 @@ int main(void) {
                 if(estado == MENU){
 
                     if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= botao_y && evento.mouse.y <= botao_y + botao_altura){
-                        estado = JOGAR;
+                        estado = MODO;
                     }
 
                     int ajuda_y = botao_y + botao_altura + 10;
@@ -588,6 +731,23 @@ int main(void) {
                     if(evento.mouse.x >= botao_x && evento.mouse.x <= botao_x + botao_comprimento && evento.mouse.y >= sair_y && evento.mouse.y <= sair_y + botao_altura){
                         rodando = false;
                     }   
+                }
+
+                if(estado == MODO){
+                    int quadrado = 100;
+                    int gap = 150;
+                    int x1 = TAMANHO_TELA_X / 2 - quadrado - gap / 2;
+                    int x2 = TAMANHO_TELA_X / 2 + gap / 2;
+
+                    tela_modo(font_titulo, font_corpo);
+                    if(evento.mouse.x >= x1 && evento.mouse.x <= x1 + quadrado && evento.mouse.y >= TAMANHO_TELA_Y / 2 - quadrado / 2 && evento.mouse.y <= TAMANHO_TELA_Y / 2 + quadrado / 2){
+                        estado = JOGAR;
+                        modo = 2;
+                    }
+                    if(evento.mouse.x >= x2 && evento.mouse.x <= x2 + quadrado && evento.mouse.y >= TAMANHO_TELA_Y / 2 - quadrado / 2 && evento.mouse.y <= TAMANHO_TELA_Y / 2 + quadrado / 2){
+                        estado = JOGAR;
+                        modo = 1;
+                    }
                 }
 
                 
@@ -612,7 +772,7 @@ int main(void) {
                         }
                     }
 
-                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez);
+                    hitbox(matriz_tabuleiro, matriz_coord, mouseX, mouseY, &pode_jogar, tabuleiro, &andar, &vez, &modo);
 
                     int texto_comprimento = al_get_text_width(font_corpo, text);
                     int texto_altura = al_get_font_line_height(font_corpo);
@@ -626,6 +786,14 @@ int main(void) {
                         estado = PAUSE;
                     }
                     
+                    ganhador = decidir_ganhador(matriz_tabuleiro);
+                    if(ganhador == 1){
+                        estado = FIM;
+                    }
+                    else if(ganhador == 2){
+                        estado = FIM;
+                    }
+
                 }
 
                 if(estado == AJUDA){
@@ -641,26 +809,14 @@ int main(void) {
                         estado = MENU;
                     }
                 }
-
-                printf("\nn_pecas1: %d", n_pecas1);
-                printf("\nn_pecas2: %d", n_pecas2);
-
-                if(estado == JOGAR){
-                    ganhador = decidir_ganhador(matriz_tabuleiro);
-                    if(ganhador == 1){
-                        estado = FIM;
-                    }
-                    else if(ganhador == 2){
-                        estado = FIM;
-                    }
-                }
-
+            
                 if(estado == FIM){
+
                     tela_vitoria(ganhador, font_corpo, font_titulo);
 
                     if(!resultado_escrito){
                         FILE *arquivo = fopen("historico.txt", "a");
-                        fprintf(arquivo, "Jogador %d venceu em %02d:%02d \n", ganhador, minutos, segundos);
+                        fprintf(arquivo, "Jogador %d venceu em %02d:%02d no modo %d\n", ganhador, minutos, segundos, modo);
                         fclose(arquivo);
                         resultado_escrito = true;
                     }
